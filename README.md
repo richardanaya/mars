@@ -1,10 +1,5 @@
 # ＭＡＨＲＳ
 
-```
-cargo install mahrs
-mahrs
-```
-
 A datascience notebook for Rust.
 
 * a full Rust context based off [evxcr](https://github.com/google/evcxr) 
@@ -22,6 +17,15 @@ This project is licensed under either of
    http://opensource.org/licenses/MIT)
 
 at your option.
+
+# Installation
+
+Mahrs runs on a server on your machine. Running its binary will start the server and open up a browser to the tool.
+
+```
+cargo install mahrs
+mahrs
+```
 
 ### Contribution
 
