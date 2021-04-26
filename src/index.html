@@ -100,7 +100,7 @@
   <body>
     <div class="layout">
       <div class="actions">
-        <div class="icon-button">
+        <div class="icon-button" id="run-all">
           <span class="material-icons"> play_circle_outline </span>
         </div>
         <div class="cpus">
@@ -242,6 +242,10 @@
         }).then((_) => _.text());
         load_result(parseFloat(text));
       }
+
+      document
+        .querySelector("#run-all")
+        .addEventListener("click", runCodeCell);
     })();
   </script>
 </html>
