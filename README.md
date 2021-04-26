@@ -7,6 +7,15 @@ A datascience notebook for Rust.
 
 ![](mahrs.gif)
 
+# Installation
+
+Mahrs runs on a server on your machine. Running its binary will start the server and open up a browser to the tool.
+
+```
+cargo install mahrs
+mahrs
+```
+
 # License
 
 This project is licensed under either of
@@ -18,14 +27,6 @@ This project is licensed under either of
 
 at your option.
 
-# Installation
-
-Mahrs runs on a server on your machine. Running its binary will start the server and open up a browser to the tool.
-
-```
-cargo install mahrs
-mahrs
-```
 
 ### Contribution
 
