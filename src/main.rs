@@ -1,0 +1,111 @@
+use async_std::task;
+use evcxr::*;
+use std::thread;
+use std::time;
+use tide::prelude::*;
+use tide::{Request, Response};
+use webbrowser;
+
+#[derive(Default)]
+struct AllResults {
+    results: Vec<Option<String>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct CodeResult {
+    result: Option<String>,
+}
+
+#[derive(Default)]
+struct OutputHistory {
+    outputs: Vec<String>,
+}
+
+fn main() {
+    evcxr::runtime_hook();
+    let (tx, rx) = flume::unbounded::<(usize, String)>();
+    let (mut commander, outputs) = CommandContext::new().unwrap();
+    thread::spawn(move || {
+        while let Ok(line) = outputs.stdout.recv() {
+            let mut all_outputs = globals::get::<OutputHistory>();
+            all_outputs.outputs.push(line);
+            drop(all_outputs);
+        }
+    });
+    let t = thread::spawn(move || {
+        for (handle, msg) in rx.iter() {
+            let execution_result = commander.execute(&msg);
+
+            let text = match execution_result {
+                Ok(output) => {
+                    thread::sleep(time::Duration::from_millis(1500));
+                    let mut all_outputs = globals::get::<OutputHistory>();
+                    let mut t = all_outputs.outputs.join("<br/>");
+                    all_outputs.outputs = vec![];
+                    drop(all_outputs);
+                    if t.len() > 0 {
+                        t.push_str("<br><hr><br>");
+                    }
+                    if let Some(tp) = output.get("text/plain") {
+                        t.push_str(tp);
+                    }
+                    if let Some(duration) = output.timing {
+                        t.push_str(&format!("Took {}ms", duration.as_millis()));
+                        for phase in output.phases {
+                            t.push_str(&format!(
+                                "  {}: {}ms",
+                                phase.name,
+                                phase.duration.as_millis()
+                            ));
+                        }
+                    }
+                    t
+                }
+                Err(evcxr::Error::CompilationErrors(errors)) => "Failed to compile".to_string(),
+                Err(err) => {
+                    format!("{}", err)
+                }
+            };
+            let mut a = globals::get::<AllResults>();
+            a.results[handle] = Some(text);
+        }
+    });
+
+    task::block_on(async {
+        let mut app = tide::new();
+        app.at("/execute").post(move |mut req: Request<()>| {
+            let f = task::block_on(async { req.body_string().await.unwrap() });
+            let mut a = globals::get::<AllResults>();
+            let h = a.results.len();
+            a.results.push(None);
+            tx.send((h, f)).unwrap();
+            async move { Ok(h.to_string().into()) as tide::Result }
+        });
+        app.at("/result/:n").get(move |req: Request<()>| {
+            let n: usize = req.param("n").unwrap().parse().unwrap();
+            async move {
+                let a = globals::get::<AllResults>();
+                if n > a.results.len() {
+                    return Ok(json!(null));
+                }
+                let r = a.results[n].clone();
+                Ok(json!({ "result": r }))
+            }
+        });
+        app.at("/").get(|_: Request<()>| async {
+            let mut req = Response::new(200);
+            req.set_body(include_str!("index.html"));
+            req.set_content_type("text/html");
+            Ok(req.into()) as tide::Result
+        });
+
+        if webbrowser::open("http://127.0.0.1:8080").is_ok() {
+        } else {
+            println!("Open browser to http://127.0.0.1:8080")
+        }
+        app.listen("127.0.0.1:8080").await?;
+        Ok(()) as tide::Result<()>
+    })
+    .unwrap();
+    t.join().unwrap();
+}
