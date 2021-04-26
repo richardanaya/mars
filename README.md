@@ -1,5 +1,10 @@
 # ＭＡＨＲＳ
 
+```
+cargo install mahrs
+mahrs
+```
+
 A datascience notebook for Rust.
 
 * a full Rust context based off [evxcr](https://github.com/google/evcxr) 
