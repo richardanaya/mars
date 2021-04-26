@@ -1,6 +1,6 @@
 # ＭＡＨＲＳ
 
-A datascience notebook for Rust.
+A data science notebook for Rust.
 
 * a full Rust context based off [evxcr](https://github.com/google/evcxr) 
 * single binary
