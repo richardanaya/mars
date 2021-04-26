@@ -6,6 +6,8 @@ edition = "2018"
 description = "A data science notebook"
 liscence = "MIT OR Apache-2.0"
 repository = "https://github.com/richardanaya/mahrs"
+readme = "README.md"
+categories = ["science", "development-tools", "visualization"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [profile.dev]
