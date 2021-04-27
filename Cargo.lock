@@ -1382,6 +1382,7 @@ dependencies = [
  "flume",
  "futures-lite",
  "globals",
+ "http-types",
  "serde",
  "tide",
  "webbrowser",
