@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MAHRS</title>
+    <script src="https://codemirror.net/6/codemirror.js"></script>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="/red_circle.svg" />
+    <style>
+      html,
+      body {
+        font-family: "Titillium Web", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: black;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 3rem auto;
+        grid-template-rows: 4rem auto;
+        height: 100%;
+      }
+
+      .header {
+        padding: 0.5rem;
+        color: #fba244;
+        padding-left: 1rem;
+      }
+
+      .actions {
+        grid-row: span 2;
+        width: 3rem;
+        border-right: solid 1px #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 1rem;
+      }
+
+      .notebook {
+        padding: 0 1rem;
+      }
+
+      .cpus {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        justify-items: center;
+      }
+
+      .cpu-title {
+        font-size: 0.7rem;
+        grid-column: span 2;
+        color: white;
+        height: 1.6rem;
+      }
+
+      .cpu {
+        width: 1rem;
+        border: solid 1px #313733;
+        height: 1rem;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.5rem;
+      }
+
+      .notebook-name {
+        color: #ece8e9;
+        margin-left: 0.3rem;
+      }
+
+      .output {
+        color: #929292;
+        padding: 1rem;
+      }
+
+      .icon-button {
+        color: #929292;
+        margin: 0.5rem;
+      }
+
+      .icon-button:hover {
+        color: white;
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🚀</text></svg>"),
+          auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <div class="actions">
+        <div class="icon-button" id="run-all">
+          <span class="material-icons"> play_circle_outline </span>
+        </div>
+        <div class="cpus">
+          <div class="cpu-title">CPU</div>
+          <div class="cpu">1</div>
+          <div class="cpu">2</div>
+        </div>
+      </div>
+      <div class="header">
+        <text-typography type="title">MAHRS</text-typography>
+        <span class="notebook-name"
+          ><text-typography type="h3">demo notebook</text-typography>
+        </span>
+      </div>
+      <div class="notebook">
+        <code-block></code-block>
+        <div id="editor"></div>
+        <div id="output" class="output"></div>
+      </div>
+    </div>
+    <script type="module" src="/index.js"></script>
+  </body>
+</html>

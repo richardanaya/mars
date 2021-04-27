@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "ESNext",
+        "target": "ESNext",
+        "strict": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "jsx": "preserve",
+        "noEmit": true,
+        "skipLibCheck": true,
+        "typeRoots": [
+            "node_modules/@types",
+            "types"
+        ]
+    },
+    "include": [
+        "src",
+        "types"
+    ]
+}

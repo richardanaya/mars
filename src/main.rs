@@ -1,11 +1,11 @@
 use async_std::task;
 use evcxr::*;
+use http_types::headers::HeaderValue;
 use std::thread;
 use std::time;
 use tide::prelude::*;
-use tide::{Request, Response};
-use http_types::headers::HeaderValue;
 use tide::security::{CorsMiddleware, Origin};
+use tide::{Request, Response};
 
 use webbrowser;
 
@@ -101,9 +101,46 @@ fn main() {
                 Ok(json!({ "result": r }))
             }
         });
+
+        app.at("/red_circle.svg").get(|_: Request<()>| async {
+            let mut req = Response::new(200);
+            req.set_body(include_str!("web/red_circle.svg"));
+            req.set_content_type("image/svg+xml");
+            Ok(req.into()) as tide::Result
+        });
+
+        app.at("/_snowpack/pkg/import-map.js")
+            .get(|_: Request<()>| async {
+                let mut req = Response::new(200);
+                req.set_body(include_str!("web/_snowpack/pkg/import-map.json"));
+                req.set_content_type("application/json; charset=utf-8");
+                Ok(req.into()) as tide::Result
+            });
+
+        app.at("/_snowpack/pkg/lit.js").get(|_: Request<()>| async {
+            let mut req = Response::new(200);
+            req.set_body(include_str!("web/_snowpack/pkg/lit.js"));
+            req.set_content_type("application/javascript; charset=utf-8");
+            Ok(req.into()) as tide::Result
+        });
+
+        app.at("/_snowpack/env.js").get(|_: Request<()>| async {
+            let mut req = Response::new(200);
+            req.set_body(include_str!("web/_snowpack/env.js"));
+            req.set_content_type("application/javascript; charset=utf-8");
+            Ok(req.into()) as tide::Result
+        });
+
+        app.at("/index.js").get(|_: Request<()>| async {
+            let mut req = Response::new(200);
+            req.set_body(include_str!("web/index.js"));
+            req.set_content_type("application/javascript; charset=utf-8");
+            Ok(req.into()) as tide::Result
+        });
+
         app.at("/").get(|_: Request<()>| async {
             let mut req = Response::new(200);
-            req.set_body(include_str!("index.html"));
+            req.set_body(include_str!("web/index.html"));
             req.set_content_type("text/html; charset=utf-8");
             Ok(req.into()) as tide::Result
         });
