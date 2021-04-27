@@ -95,7 +95,7 @@ fn main() {
         app.at("/").get(|_: Request<()>| async {
             let mut req = Response::new(200);
             req.set_body(include_str!("index.html"));
-            req.set_content_type("text/html");
+            req.set_content_type("text/html; charset=utf-8");
             Ok(req.into()) as tide::Result
         });
 
