@@ -20,29 +20,33 @@ struct CodeResult {
 }
 
 #[derive(Default)]
-struct OutputHistory {
+struct ExecutionCore {
+    ready: bool,
     outputs: Vec<String>,
 }
 
 fn main() {
     evcxr::runtime_hook();
     let (tx, rx) = flume::unbounded::<(usize, String)>();
-    let (mut commander, outputs) = CommandContext::new().unwrap();
-    thread::spawn(move || {
-        while let Ok(line) = outputs.stdout.recv() {
-            let mut all_outputs = globals::get::<OutputHistory>();
-            all_outputs.outputs.push(line);
-            drop(all_outputs);
-        }
-    });
     let t = thread::spawn(move || {
+        let (mut commander, outputs) = CommandContext::new().unwrap();
+        let mut core = globals::get::<ExecutionCore>();
+        core.ready = true;
+        drop(core);
+        thread::spawn(move || {
+            while let Ok(line) = outputs.stdout.recv() {
+                let mut all_outputs = globals::get::<ExecutionCore>();
+                all_outputs.outputs.push(line);
+                drop(all_outputs);
+            }
+        });
         for (handle, msg) in rx.iter() {
             let execution_result = commander.execute(&msg);
 
             let text = match execution_result {
                 Ok(output) => {
                     thread::sleep(time::Duration::from_millis(1500));
-                    let mut all_outputs = globals::get::<OutputHistory>();
+                    let mut all_outputs = globals::get::<ExecutionCore>();
                     let mut t = all_outputs.outputs.join("<br/>");
                     all_outputs.outputs = vec![];
                     drop(all_outputs);
@@ -64,7 +68,7 @@ fn main() {
                     }
                     t
                 }
-                Err(evcxr::Error::CompilationErrors(errors)) => "Failed to compile".to_string(),
+                Err(evcxr::Error::CompilationErrors(_errors)) => "Failed to compile".to_string(),
                 Err(err) => {
                     format!("{}", err)
                 }
@@ -82,6 +86,14 @@ fn main() {
             .allow_origin(Origin::from("*"))
             .allow_credentials(false);
         app.with(cors);
+
+        app.at("/ready").get(move |_req: Request<()>| {
+            let core = globals::get::<ExecutionCore>();
+            let ready = core.ready;
+            drop(core);
+            async move { Ok(json!({ "ready": ready })) }
+        });
+
         app.at("/execute").post(move |mut req: Request<()>| {
             let f = task::block_on(async { req.body_string().await.unwrap() });
             let mut a = globals::get::<AllResults>();
@@ -90,6 +102,7 @@ fn main() {
             tx.send((h, f)).unwrap();
             async move { Ok(h.to_string().into()) as tide::Result }
         });
+
         app.at("/result/:n").get(move |req: Request<()>| {
             let n: usize = req.param("n").unwrap().parse().unwrap();
             async move {
@@ -124,6 +137,14 @@ fn main() {
             Ok(req.into()) as tide::Result
         });
 
+        app.at("/_snowpack/pkg/lit/decorators.js")
+            .get(|_: Request<()>| async {
+                let mut req = Response::new(200);
+                req.set_body(include_str!("web/_snowpack/pkg/lit/decorators.js"));
+                req.set_content_type("application/javascript; charset=utf-8");
+                Ok(req.into()) as tide::Result
+            });
+
         app.at("/_snowpack/env.js").get(|_: Request<()>| async {
             let mut req = Response::new(200);
             req.set_body(include_str!("web/_snowpack/env.js"));
@@ -137,6 +158,19 @@ fn main() {
             req.set_content_type("application/javascript; charset=utf-8");
             Ok(req.into()) as tide::Result
         });
+        app.at("/LoadingScreen.js").get(|_: Request<()>| async {
+            let mut req = Response::new(200);
+            req.set_body(include_str!("web/LoadingScreen.js"));
+            req.set_content_type("application/javascript; charset=utf-8");
+            Ok(req.into()) as tide::Result
+        });
+
+        app.at("/util.js").get(|_: Request<()>| async {
+            let mut req = Response::new(200);
+            req.set_body(include_str!("web/util.js"));
+            req.set_content_type("application/javascript; charset=utf-8");
+            Ok(req.into()) as tide::Result
+        });
 
         app.at("/").get(|_: Request<()>| async {
             let mut req = Response::new(200);
@@ -145,10 +179,8 @@ fn main() {
             Ok(req.into()) as tide::Result
         });
 
-        if webbrowser::open("http://127.0.0.1:8080").is_ok() {
-        } else {
-            println!("Open browser to http://127.0.0.1:8080")
-        }
+        println!("Server started at http://127.0.0.1:8080");
+        webbrowser::open("http://127.0.0.1:8080").unwrap();
         app.listen("127.0.0.1:8080").await?;
         Ok(()) as tide::Result<()>
     })

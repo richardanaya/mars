@@ -1,4 +1,6 @@
 import {html, LitElement} from "./_snowpack/pkg/lit.js";
+import "./LoadingScreen.js";
+import {sleep} from "./util.js";
 export class TextTypography extends LitElement {
   createRenderRoot() {
     return this;
@@ -66,13 +68,6 @@ customElements.define("text-typography", TextTypography);
     }),
     parent: document.querySelector("#editor")
   });
-  function sleep(t) {
-    return new Promise((resolve) => {
-      window.setTimeout(() => {
-        resolve();
-      }, t);
-    });
-  }
   async function load_result(handle) {
     let c = 0;
     while (true) {

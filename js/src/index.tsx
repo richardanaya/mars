@@ -1,5 +1,8 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import "./LoadingScreen";
+import { sleep } from "./util";
+
 export class TextTypography extends LitElement {
   createRenderRoot() {
     return this;
@@ -76,15 +79,9 @@ customElements.define("text-typography", TextTypography);
     parent: document.querySelector("#editor"),
   });
 
-  function sleep(t: number) {
-    return new Promise<void>((resolve) => {
-      window.setTimeout(() => {
-        resolve();
-      }, t);
-    });
-  }
 
-  async function load_result(handle:number) {
+
+  async function load_result(handle: number) {
     let c = 0;
     while (true) {
       if (c > 60) {
