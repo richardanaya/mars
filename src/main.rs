@@ -158,9 +158,17 @@ fn main() {
             req.set_content_type("application/javascript; charset=utf-8");
             Ok(req.into()) as tide::Result
         });
+
         app.at("/LoadingScreen.js").get(|_: Request<()>| async {
             let mut req = Response::new(200);
             req.set_body(include_str!("web/LoadingScreen.js"));
+            req.set_content_type("application/javascript; charset=utf-8");
+            Ok(req.into()) as tide::Result
+        });
+
+        app.at("/TextTypography.js").get(|_: Request<()>| async {
+            let mut req = Response::new(200);
+            req.set_body(include_str!("web/TextTypography.js"));
             req.set_content_type("application/javascript; charset=utf-8");
             Ok(req.into()) as tide::Result
         });
