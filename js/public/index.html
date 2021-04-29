@@ -53,30 +53,6 @@
         padding: 0 1rem;
       }
 
-      .cpus {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        justify-items: center;
-      }
-
-      .cpu-title {
-        font-size: 0.7rem;
-        grid-column: span 2;
-        color: white;
-        height: 1.6rem;
-      }
-
-      .cpu {
-        width: 1rem;
-        border: solid 1px #313733;
-        height: 1rem;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.5rem;
-      }
-
       .notebook-name {
         color: #ece8e9;
         margin-left: 0.3rem;
@@ -85,9 +61,10 @@
       .icon-button {
         color: #929292;
         margin: 0.5rem;
+        cursor: pointer;
       }
 
-      .icon-button:hover {
+      #run-all:hover {
         color: white;
         cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🚀</text></svg>"),
           auto;
@@ -101,11 +78,10 @@
         <div class="icon-button" id="run-all">
           <span class="material-icons"> play_circle_outline </span>
         </div>
-        <div class="cpus">
-          <div class="cpu-title">CPU</div>
-          <div class="cpu">1</div>
-          <div class="cpu">2</div>
+        <div class="icon-button" id="add-cell">
+          <span class="material-icons"> add </span>
         </div>
+        <cpu-info></cpu-info>
       </div>
       <div class="header">
         <text-typography type="title">MAHRS</text-typography>
@@ -114,8 +90,6 @@
         </span>
       </div>
       <div class="notebook">
-        <code-cell></code-cell>
-        <code-cell></code-cell>
         <code-cell></code-cell>
       </div>
     </div>
