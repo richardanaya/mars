@@ -122,29 +122,6 @@ fn main() {
             Ok(req.into()) as tide::Result
         });
 
-        app.at("/_snowpack/pkg/import-map.js")
-            .get(|_: Request<()>| async {
-                let mut req = Response::new(200);
-                req.set_body(include_str!("web/_snowpack/pkg/import-map.json"));
-                req.set_content_type("application/json; charset=utf-8");
-                Ok(req.into()) as tide::Result
-            });
-
-        app.at("/_snowpack/pkg/lit.js").get(|_: Request<()>| async {
-            let mut req = Response::new(200);
-            req.set_body(include_str!("web/_snowpack/pkg/lit.js"));
-            req.set_content_type("application/javascript; charset=utf-8");
-            Ok(req.into()) as tide::Result
-        });
-
-        app.at("/_snowpack/pkg/lit/decorators.js")
-            .get(|_: Request<()>| async {
-                let mut req = Response::new(200);
-                req.set_body(include_str!("web/_snowpack/pkg/lit/decorators.js"));
-                req.set_content_type("application/javascript; charset=utf-8");
-                Ok(req.into()) as tide::Result
-            });
-
         app.at("/_snowpack/env.js").get(|_: Request<()>| async {
             let mut req = Response::new(200);
             req.set_body(include_str!("web/_snowpack/env.js"));
@@ -155,34 +132,6 @@ fn main() {
         app.at("/index.js").get(|_: Request<()>| async {
             let mut req = Response::new(200);
             req.set_body(include_str!("web/index.js"));
-            req.set_content_type("application/javascript; charset=utf-8");
-            Ok(req.into()) as tide::Result
-        });
-
-        app.at("/LoadingScreen.js").get(|_: Request<()>| async {
-            let mut req = Response::new(200);
-            req.set_body(include_str!("web/LoadingScreen.js"));
-            req.set_content_type("application/javascript; charset=utf-8");
-            Ok(req.into()) as tide::Result
-        });
-
-        app.at("/CodeCell.js").get(|_: Request<()>| async {
-            let mut req = Response::new(200);
-            req.set_body(include_str!("web/CodeCell.js"));
-            req.set_content_type("application/javascript; charset=utf-8");
-            Ok(req.into()) as tide::Result
-        });
-
-        app.at("/TextTypography.js").get(|_: Request<()>| async {
-            let mut req = Response::new(200);
-            req.set_body(include_str!("web/TextTypography.js"));
-            req.set_content_type("application/javascript; charset=utf-8");
-            Ok(req.into()) as tide::Result
-        });
-
-        app.at("/util.js").get(|_: Request<()>| async {
-            let mut req = Response::new(200);
-            req.set_body(include_str!("web/util.js"));
             req.set_content_type("application/javascript; charset=utf-8");
             Ok(req.into()) as tide::Result
         });

@@ -1,0 +1,120 @@
+{
+  "inputs": {
+    "index.html.inline.0.css": {
+      "bytes": 1623,
+      "imports": []
+    },
+    "_snowpack/pkg/lit.js": {
+      "bytes": 15499,
+      "imports": []
+    },
+    "_snowpack/pkg/lit/decorators.js": {
+      "bytes": 328,
+      "imports": []
+    },
+    "TextTypography.js": {
+      "bytes": 1111,
+      "imports": [
+        {
+          "path": "_snowpack/pkg/lit.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "_snowpack/pkg/lit/decorators.js",
+          "kind": "import-statement"
+        }
+      ]
+    },
+    "util.js": {
+      "bytes": 254,
+      "imports": []
+    },
+    "LoadingScreen.js": {
+      "bytes": 3073,
+      "imports": [
+        {
+          "path": "_snowpack/pkg/lit.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "_snowpack/pkg/lit/decorators.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "util.js",
+          "kind": "import-statement"
+        }
+      ]
+    },
+    "CodeCell.js": {
+      "bytes": 3393,
+      "imports": [
+        {
+          "path": "_snowpack/pkg/lit.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "_snowpack/pkg/lit/decorators.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "util.js",
+          "kind": "import-statement"
+        }
+      ]
+    },
+    "index.js": {
+      "bytes": 83,
+      "imports": [
+        {
+          "path": "TextTypography.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "LoadingScreen.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "CodeCell.js",
+          "kind": "import-statement"
+        }
+      ]
+    }
+  },
+  "outputs": {
+    "../~~bundle~~/index.html.inline.0.css": {
+      "imports": [],
+      "inputs": {
+        "index.html.inline.0.css": {
+          "bytesInOutput": 997
+        }
+      },
+      "bytes": 998
+    },
+    "../~~bundle~~/index.js": {
+      "imports": [],
+      "exports": [],
+      "inputs": {
+        "_snowpack/pkg/lit.js": {
+          "bytesInOutput": 14996
+        },
+        "_snowpack/pkg/lit/decorators.js": {
+          "bytesInOutput": 199
+        },
+        "TextTypography.js": {
+          "bytesInOutput": 497
+        },
+        "util.js": {
+          "bytesInOutput": 141
+        },
+        "LoadingScreen.js": {
+          "bytesInOutput": 2240
+        },
+        "CodeCell.js": {
+          "bytesInOutput": 2035
+        }
+      },
+      "bytes": 20289
+    }
+  }
+}
