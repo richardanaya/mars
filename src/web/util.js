@@ -5,3 +5,9 @@ export function sleep(t) {
     }, t);
   });
 }
+export function defined(t) {
+  if (t === null || t === void 0) {
+    throw Error("value was not defined");
+  }
+  return t;
+}
