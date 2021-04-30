@@ -1,6 +1,7 @@
 use async_std::task;
 use evcxr::*;
 use http_types::headers::HeaderValue;
+use std::collections::HashMap;
 use std::thread;
 use std::time;
 use tide::prelude::*;
@@ -20,15 +21,15 @@ struct CodeResult {
     result: Option<String>,
 }
 
-#[derive(Default)]
 struct ExecutionCore {
     ready: bool,
     outputs: Vec<String>,
+    sender: flume::Sender<(usize, std::string::String)>,
 }
 
 #[derive(Default)]
 struct ContextCollection {
-    sender: Option<flume::Sender<(usize, std::string::String)>>,
+    context_map: HashMap<String, ExecutionCore>,
 }
 
 fn main() {
@@ -45,17 +46,29 @@ fn main() {
         app.at("notebook/start").get(|_req: Request<()>| {
             let (tx, rx) = flume::unbounded::<(usize, String)>();
             let mut context_collection = globals::get::<ContextCollection>();
-            context_collection.sender = Some(tx);
-            let t = thread::spawn(move || {
+            let id_to_return = Uuid::new_v4().to_string();
+            context_collection.context_map.insert(
+                id_to_return.clone(),
+                ExecutionCore {
+                    ready: false,
+                    outputs: vec![],
+                    sender: tx,
+                },
+            );
+            let id = id_to_return.clone();
+            let id2 = id_to_return.clone();
+            thread::spawn(move || {
                 let (mut commander, outputs) = CommandContext::new().unwrap();
-                let mut core = globals::get::<ExecutionCore>();
+                let mut context_collection = globals::get::<ContextCollection>();
+                let mut core = context_collection.context_map.get_mut(&id).unwrap();
                 core.ready = true;
-                drop(core);
+                drop(context_collection);
                 thread::spawn(move || {
                     while let Ok(line) = outputs.stdout.recv() {
-                        let mut all_outputs = globals::get::<ExecutionCore>();
-                        all_outputs.outputs.push(line);
-                        drop(all_outputs);
+                        let mut context_collection = globals::get::<ContextCollection>();
+                        let core = context_collection.context_map.get_mut(&id).unwrap();
+                        core.outputs.push(line);
+                        drop(context_collection);
                     }
                 });
                 for (handle, msg) in rx.iter() {
@@ -64,10 +77,11 @@ fn main() {
                     let text = match execution_result {
                         Ok(output) => {
                             thread::sleep(time::Duration::from_millis(1500));
-                            let mut all_outputs = globals::get::<ExecutionCore>();
-                            let mut t = all_outputs.outputs.join("<br/>");
-                            all_outputs.outputs = vec![];
-                            drop(all_outputs);
+                            let mut context_collection = globals::get::<ContextCollection>();
+                            let mut core = context_collection.context_map.get_mut(&id2).unwrap();
+                            let mut t = core.outputs.join("<br/>");
+                            core.outputs = vec![];
+                            drop(context_collection);
                             if t.len() > 0 {
                                 t.push_str("<br><hr><br>");
                             }
@@ -97,34 +111,29 @@ fn main() {
                     a.results[handle] = Some(text);
                 }
             });
-            async move {
-                Ok(json!({
-                    "id": Uuid::new_v4().to_string()
-                }))
-            }
+            async move { Ok(json!({ "id": id_to_return })) }
         });
 
         app.at("notebook/:notebook_id/ready")
-            .get(move |_req: Request<()>| {
-                let core = globals::get::<ExecutionCore>();
+            .get(move |req: Request<()>| {
+                let id = req.param("notebook_id").unwrap().to_string();
+                let context_collection = globals::get::<ContextCollection>();
+                let core = context_collection.context_map.get(&id).unwrap();
                 let ready = core.ready;
-                drop(core);
+                drop(context_collection);
                 async move { Ok(json!({ "ready": ready })) }
             });
 
         app.at("notebook/:notebook_id/execute")
             .post(move |mut req: Request<()>| {
+                let id = req.param("notebook_id").unwrap().to_string();
                 let f = task::block_on(async { req.body_string().await.unwrap() });
                 let mut a = globals::get::<AllResults>();
                 let h = a.results.len();
                 a.results.push(None);
                 let context_collection = globals::get::<ContextCollection>();
-                context_collection
-                    .sender
-                    .as_ref()
-                    .unwrap()
-                    .send((h, f))
-                    .unwrap();
+                let core = context_collection.context_map.get(&id).unwrap();
+                core.sender.send((h, f)).unwrap();
                 async move { Ok(h.to_string().into()) as tide::Result }
             });
 
