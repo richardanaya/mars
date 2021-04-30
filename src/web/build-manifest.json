@@ -1,7 +1,7 @@
 {
   "inputs": {
     "index.html.inline.0.css": {
-      "bytes": 1623,
+      "bytes": 1163,
       "imports": []
     },
     "_snowpack/pkg/lit.js": {
@@ -25,12 +25,12 @@
         }
       ]
     },
-    "util.js": {
-      "bytes": 254,
+    "Notebook.js": {
+      "bytes": 168,
       "imports": []
     },
     "LoadingScreen.js": {
-      "bytes": 3073,
+      "bytes": 3487,
       "imports": [
         {
           "path": "_snowpack/pkg/lit.js",
@@ -38,6 +38,31 @@
         },
         {
           "path": "_snowpack/pkg/lit/decorators.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "Notebook.js",
+          "kind": "import-statement"
+        }
+      ]
+    },
+    "util.js": {
+      "bytes": 254,
+      "imports": []
+    },
+    "CodeCell.js": {
+      "bytes": 3515,
+      "imports": [
+        {
+          "path": "_snowpack/pkg/lit.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "_snowpack/pkg/lit/decorators.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "Notebook.js",
           "kind": "import-statement"
         },
         {
@@ -46,8 +71,8 @@
         }
       ]
     },
-    "CodeCell.js": {
-      "bytes": 3393,
+    "CpuInfo.js": {
+      "bytes": 1424,
       "imports": [
         {
           "path": "_snowpack/pkg/lit.js",
@@ -55,16 +80,12 @@
         },
         {
           "path": "_snowpack/pkg/lit/decorators.js",
-          "kind": "import-statement"
-        },
-        {
-          "path": "util.js",
           "kind": "import-statement"
         }
       ]
     },
     "index.js": {
-      "bytes": 83,
+      "bytes": 270,
       "imports": [
         {
           "path": "TextTypography.js",
@@ -77,6 +98,10 @@
         {
           "path": "CodeCell.js",
           "kind": "import-statement"
+        },
+        {
+          "path": "CpuInfo.js",
+          "kind": "import-statement"
         }
       ]
     }
@@ -86,10 +111,10 @@
       "imports": [],
       "inputs": {
         "index.html.inline.0.css": {
-          "bytesInOutput": 997
+          "bytesInOutput": 732
         }
       },
-      "bytes": 998
+      "bytes": 733
     },
     "../~~bundle~~/index.js": {
       "imports": [],
@@ -104,17 +129,26 @@
         "TextTypography.js": {
           "bytesInOutput": 497
         },
-        "util.js": {
-          "bytesInOutput": 141
+        "Notebook.js": {
+          "bytesInOutput": 50
         },
         "LoadingScreen.js": {
-          "bytesInOutput": 2240
+          "bytesInOutput": 2404
+        },
+        "util.js": {
+          "bytesInOutput": 142
         },
         "CodeCell.js": {
-          "bytesInOutput": 2035
+          "bytesInOutput": 2068
+        },
+        "CpuInfo.js": {
+          "bytesInOutput": 910
+        },
+        "index.js": {
+          "bytesInOutput": 194
         }
       },
-      "bytes": 20289
+      "bytes": 21641
     }
   }
 }

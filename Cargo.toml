@@ -23,3 +23,4 @@ flume = "0.10"
 futures-lite = "1"
 globals = "1"
 http-types = "2"
+uuid = {version = "0.8", features = ["serde", "v4"] }

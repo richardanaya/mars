@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200;400;700&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="icon" href="/red_circle.svg">
-    <style>html,body{font-family:"Titillium Web",sans-serif;margin:0;padding:0;background:black;height:100%}.layout{display:grid;grid-template-columns:3rem auto;grid-template-rows:4rem auto;height:100%}.header{padding:.5rem;color:#fba244;padding-left:1rem}.actions{grid-row:span 2;width:3rem;border-right:solid 1px #333;display:flex;flex-direction:column;align-items:center;padding-top:1rem}.notebook{padding:0 1rem}.cpus{display:grid;grid-template-columns:1fr 1fr;justify-items:center}.cpu-title{font-size:.7rem;grid-column:span 2;color:#fff;height:1.6rem}.cpu{width:1rem;border:solid 1px #313733;height:1rem;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.5rem}.notebook-name{color:#ece8e9;margin-left:.3rem}.icon-button{color:#929292;margin:.5rem}.icon-button:hover{color:#fff;cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>\1f680</text></svg>"),auto}
+    <style>html,body{font-family:"Titillium Web",sans-serif;margin:0;padding:0;background:black;height:100%}.layout{display:grid;grid-template-columns:3rem auto;grid-template-rows:4rem auto;height:100%}.header{padding:.5rem;color:#fba244;padding-left:1rem}.actions{grid-row:span 2;width:3rem;border-right:solid 1px #333;display:flex;flex-direction:column;align-items:center;padding-top:1rem}.notebook{padding:0 1rem}.notebook-name{color:#ece8e9;margin-left:.3rem}.icon-button{color:#929292;margin:.5rem;cursor:pointer}#run-all:hover{color:#fff;cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>\1f680</text></svg>"),auto}
 </style>
   </head>
   <body>
@@ -18,11 +18,10 @@
         <div class="icon-button" id="run-all">
           <span class="material-icons"> play_circle_outline </span>
         </div>
-        <div class="cpus">
-          <div class="cpu-title">CPU</div>
-          <div class="cpu">1</div>
-          <div class="cpu">2</div>
+        <div class="icon-button" id="add-cell">
+          <span class="material-icons"> add </span>
         </div>
+        <cpu-info></cpu-info>
       </div>
       <div class="header">
         <text-typography type="title">MAHRS</text-typography>
@@ -30,8 +29,6 @@
         </span>
       </div>
       <div class="notebook">
-        <code-cell></code-cell>
-        <code-cell></code-cell>
         <code-cell></code-cell>
       </div>
     </div>

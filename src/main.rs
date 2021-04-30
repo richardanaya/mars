@@ -6,6 +6,7 @@ use std::time;
 use tide::prelude::*;
 use tide::security::{CorsMiddleware, Origin};
 use tide::{Request, Response};
+use uuid::Uuid;
 
 use webbrowser;
 
@@ -25,59 +26,13 @@ struct ExecutionCore {
     outputs: Vec<String>,
 }
 
+#[derive(Default)]
+struct ContextCollection {
+    sender: Option<flume::Sender<(usize, std::string::String)>>,
+}
+
 fn main() {
     evcxr::runtime_hook();
-    let (tx, rx) = flume::unbounded::<(usize, String)>();
-    let t = thread::spawn(move || {
-        let (mut commander, outputs) = CommandContext::new().unwrap();
-        let mut core = globals::get::<ExecutionCore>();
-        core.ready = true;
-        drop(core);
-        thread::spawn(move || {
-            while let Ok(line) = outputs.stdout.recv() {
-                let mut all_outputs = globals::get::<ExecutionCore>();
-                all_outputs.outputs.push(line);
-                drop(all_outputs);
-            }
-        });
-        for (handle, msg) in rx.iter() {
-            let execution_result = commander.execute(&msg);
-
-            let text = match execution_result {
-                Ok(output) => {
-                    thread::sleep(time::Duration::from_millis(1500));
-                    let mut all_outputs = globals::get::<ExecutionCore>();
-                    let mut t = all_outputs.outputs.join("<br/>");
-                    all_outputs.outputs = vec![];
-                    drop(all_outputs);
-                    if t.len() > 0 {
-                        t.push_str("<br><hr><br>");
-                    }
-                    if let Some(tp) = output.get("text/plain") {
-                        t.push_str(tp);
-                    }
-                    if let Some(duration) = output.timing {
-                        t.push_str(&format!("Took {}ms", duration.as_millis()));
-                        for phase in output.phases {
-                            t.push_str(&format!(
-                                "  {}: {}ms",
-                                phase.name,
-                                phase.duration.as_millis()
-                            ));
-                        }
-                    }
-                    t
-                }
-                Err(evcxr::Error::CompilationErrors(_errors)) => "Failed to compile".to_string(),
-                Err(err) => {
-                    format!("{}", err)
-                }
-            };
-            let mut a = globals::get::<AllResults>();
-            a.results[handle] = Some(text);
-        }
-    });
-
     task::block_on(async {
         let mut app = tide::new();
 
@@ -87,33 +42,104 @@ fn main() {
             .allow_credentials(false);
         app.with(cors);
 
-        app.at("/ready").get(move |_req: Request<()>| {
-            let core = globals::get::<ExecutionCore>();
-            let ready = core.ready;
-            drop(core);
-            async move { Ok(json!({ "ready": ready })) }
-        });
+        app.at("notebook/start").get(|_req: Request<()>| {
+            let (tx, rx) = flume::unbounded::<(usize, String)>();
+            let mut context_collection = globals::get::<ContextCollection>();
+            context_collection.sender = Some(tx);
+            let t = thread::spawn(move || {
+                let (mut commander, outputs) = CommandContext::new().unwrap();
+                let mut core = globals::get::<ExecutionCore>();
+                core.ready = true;
+                drop(core);
+                thread::spawn(move || {
+                    while let Ok(line) = outputs.stdout.recv() {
+                        let mut all_outputs = globals::get::<ExecutionCore>();
+                        all_outputs.outputs.push(line);
+                        drop(all_outputs);
+                    }
+                });
+                for (handle, msg) in rx.iter() {
+                    let execution_result = commander.execute(&msg);
 
-        app.at("/execute").post(move |mut req: Request<()>| {
-            let f = task::block_on(async { req.body_string().await.unwrap() });
-            let mut a = globals::get::<AllResults>();
-            let h = a.results.len();
-            a.results.push(None);
-            tx.send((h, f)).unwrap();
-            async move { Ok(h.to_string().into()) as tide::Result }
-        });
-
-        app.at("/result/:n").get(move |req: Request<()>| {
-            let n: usize = req.param("n").unwrap().parse().unwrap();
-            async move {
-                let a = globals::get::<AllResults>();
-                if n > a.results.len() {
-                    return Ok(json!(null));
+                    let text = match execution_result {
+                        Ok(output) => {
+                            thread::sleep(time::Duration::from_millis(1500));
+                            let mut all_outputs = globals::get::<ExecutionCore>();
+                            let mut t = all_outputs.outputs.join("<br/>");
+                            all_outputs.outputs = vec![];
+                            drop(all_outputs);
+                            if t.len() > 0 {
+                                t.push_str("<br><hr><br>");
+                            }
+                            if let Some(tp) = output.get("text/plain") {
+                                t.push_str(tp);
+                            }
+                            if let Some(duration) = output.timing {
+                                t.push_str(&format!("Took {}ms", duration.as_millis()));
+                                for phase in output.phases {
+                                    t.push_str(&format!(
+                                        "  {}: {}ms",
+                                        phase.name,
+                                        phase.duration.as_millis()
+                                    ));
+                                }
+                            }
+                            t
+                        }
+                        Err(evcxr::Error::CompilationErrors(_errors)) => {
+                            "Failed to compile".to_string()
+                        }
+                        Err(err) => {
+                            format!("{}", err)
+                        }
+                    };
+                    let mut a = globals::get::<AllResults>();
+                    a.results[handle] = Some(text);
                 }
-                let r = a.results[n].clone();
-                Ok(json!({ "result": r }))
+            });
+            async move {
+                Ok(json!({
+                    "id": Uuid::new_v4().to_string()
+                }))
             }
         });
+
+        app.at("notebook/:notebook_id/ready")
+            .get(move |_req: Request<()>| {
+                let core = globals::get::<ExecutionCore>();
+                let ready = core.ready;
+                drop(core);
+                async move { Ok(json!({ "ready": ready })) }
+            });
+
+        app.at("notebook/:notebook_id/execute")
+            .post(move |mut req: Request<()>| {
+                let f = task::block_on(async { req.body_string().await.unwrap() });
+                let mut a = globals::get::<AllResults>();
+                let h = a.results.len();
+                a.results.push(None);
+                let context_collection = globals::get::<ContextCollection>();
+                context_collection
+                    .sender
+                    .as_ref()
+                    .unwrap()
+                    .send((h, f))
+                    .unwrap();
+                async move { Ok(h.to_string().into()) as tide::Result }
+            });
+
+        app.at("notebook/:notebook_id/result/:n")
+            .get(move |req: Request<()>| {
+                let n: usize = req.param("n").unwrap().parse().unwrap();
+                async move {
+                    let a = globals::get::<AllResults>();
+                    if n > a.results.len() {
+                        return Ok(json!(null));
+                    }
+                    let r = a.results[n].clone();
+                    Ok(json!({ "result": r }))
+                }
+            });
 
         app.at("/red_circle.svg").get(|_: Request<()>| async {
             let mut req = Response::new(200);
@@ -149,5 +175,4 @@ fn main() {
         Ok(()) as tide::Result<()>
     })
     .unwrap();
-    t.join().unwrap();
 }

@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { getCurrentNotebookId, setCurrentNotebookId } from "./Notebook";
 import { sleep } from "./util";
 
 @customElement("loading-screen")
@@ -71,24 +72,36 @@ class LoadingScreen extends LitElement {
 
   constructor() {
     super();
-    const intervalHandle = window.setInterval(async () => {
-      while (true) {
-        let result = await fetch("http://localhost:8080/ready").then((_) =>
-          _.json()
-        );
-        if (result.ready) {
-          window.clearInterval(intervalHandle);
-          this.style.opacity = "0";
-          window.setTimeout(()=>{
-            let app = document.querySelector(".layout");
-            if(app) app.style.opacity = 1;
-            this.remove();
-          },1000);
-          return;
+    (async () => {
+      let result = await fetch(
+        `http://127.0.0.1:8080/notebook/start`
+      ).then((_) => _.json());
+      console.log(result);
+      setCurrentNotebookId(result.id);
+      const intervalHandle = window.setInterval(async () => {
+        try {
+          let currentId = getCurrentNotebookId();
+          if (!currentId) {
+            return;
+          }
+          let result = await fetch(
+            `http://127.0.0.1:8080/notebook/${currentId}/ready`
+          ).then((_) => _.json());
+          if (result.ready) {
+            window.clearInterval(intervalHandle);
+            this.style.opacity = "0";
+            window.setTimeout(() => {
+              let app = document.querySelector(".layout");
+              if (app) app.style.opacity = 1;
+              this.remove();
+            }, 1000);
+            return;
+          }
+        } catch (e) {
+          console.log(e);
         }
-        await sleep(1000);
-      }
-    });
+      }, 1000);
+    })();
   }
 
   render() {
