@@ -96,13 +96,15 @@ class CodeCell extends LitElement {
       if (c > 60) {
         return;
       }
-      let response = await fetch(`http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/result/` + handle);
+      let response = await fetch(
+        `http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/result/` +
+          handle
+      );
       let r = (await response.json()) as { result: string };
-      if (r.result == null) {
+      if (r == null) {
         await sleep(1000);
       } else {
-        defined(this.querySelector(".code-cell-output")).innerHTML =
-          r.result;
+        defined(this.querySelector(".code-cell-output")).innerHTML = r.result;
         return;
       }
       c++;
@@ -112,10 +114,13 @@ class CodeCell extends LitElement {
   async runCodeCell() {
     defined(this.querySelector(".code-cell-output")).innerHTML =
       "Processing...";
-    let text = await fetch(`http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/execute`, {
-      method: "POST",
-      body: defined(this.editorView).state.doc.toString(),
-    }).then((_) => _.text());
+    let text = await fetch(
+      `http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/execute`,
+      {
+        method: "POST",
+        body: defined(this.editorView).state.doc.toString(),
+      }
+    ).then((_) => _.text());
     this.load_result(parseFloat(text));
   }
 }

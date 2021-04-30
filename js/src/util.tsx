@@ -6,8 +6,8 @@ export function sleep(t: number) {
   });
 }
 
-export function defined<T>(t:T | undefined | null){
-  if(t === null || t === undefined){
+export function defined<T>(t: T | undefined | null) {
+  if (t === null || t === undefined) {
     throw Error("value was not defined");
   }
   return t;

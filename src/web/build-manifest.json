@@ -51,7 +51,7 @@
       "imports": []
     },
     "CodeCell.js": {
-      "bytes": 3515,
+      "bytes": 3531,
       "imports": [
         {
           "path": "_snowpack/pkg/lit.js",
@@ -139,7 +139,7 @@
           "bytesInOutput": 142
         },
         "CodeCell.js": {
-          "bytesInOutput": 2068
+          "bytesInOutput": 2084
         },
         "CpuInfo.js": {
           "bytesInOutput": 910
@@ -148,7 +148,7 @@
           "bytesInOutput": 194
         }
       },
-      "bytes": 21641
+      "bytes": 21657
     }
   }
 }
