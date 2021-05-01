@@ -1,4 +1,4 @@
-# ＭＡＨＲＳ
+# ＭＡＲＳ
 
 A data science notebook for Rust.
 
