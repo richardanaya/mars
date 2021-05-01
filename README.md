@@ -9,11 +9,11 @@ A data science notebook for Rust.
 
 # Installation
 
-Mahrs runs on a server on your machine. Running its binary will start the server and open up a browser to the tool.
+Mars runs on a server on your machine. Running its binary will start the server and open up a browser to the tool.
 
 ```
-cargo install mahrs
-mahrs
+cargo install mars
+mars
 ```
 
 # License
