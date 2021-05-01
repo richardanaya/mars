@@ -72,7 +72,6 @@ class CodeCell extends LitElement {
             {
               key: "Ctrl-Enter",
               run: () => {
-                debugger;
                 this.runCodeCell();
               },
             },
@@ -96,11 +95,11 @@ class CodeCell extends LitElement {
       if (c > 60) {
         return;
       }
-      let response = await fetch(
+      let r = (await fetch(
         `http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/result/` +
           handle
-      );
-      let r = (await response.json()) as { result: string };
+      ).then((_) => _.json())) as { result: string };
+      console.log(r);
       if (r == null) {
         await sleep(1000);
       } else {
