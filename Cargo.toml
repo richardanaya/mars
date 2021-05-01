@@ -5,7 +5,7 @@ authors = ["Richard Anaya"]
 edition = "2018"
 description = "A data science notebook"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/richardanaya/mahrs"
+repository = "https://github.com/richardanaya/mars"
 readme = "README.md"
 categories = ["science", "development-tools", "visualization"]
 
