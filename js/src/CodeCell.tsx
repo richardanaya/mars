@@ -99,11 +99,30 @@ class CodeCell extends LitElement {
         `http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/result/` +
           handle
       ).then((_) => _.json())) as { result: string };
-      console.log(r);
+      let outputCell = defined(this.querySelector(".code-cell-output"));
       if (r == null) {
         await sleep(1000);
       } else {
-        defined(this.querySelector(".code-cell-output")).innerHTML = r.result;
+        try {
+          let a = JSON.parse(r.result);
+          a = JSON.parse(a);
+          outputCell.innerHTML = "";
+          if (a.log) {
+            outputCell.innerHTML += a.log.replaceAll("\n", "<br>");
+            outputCell.innerHTML += "<hr/>";
+          }
+          if (a.html) {
+            outputCell.innerHTML += a.html;
+          } else if (a.image) {
+            outputCell.innerHTML += `<img src="${a.image}">`;
+          } else if (a.text) {
+            outputCell.innerHTML += a.text.replaceAll("\n", "<br>");
+          } else {
+            outputCell.innerHTML += r.result;
+          }
+        } catch (e) {
+          outputCell.innerHTML = r.result;
+        }
         return;
       }
       c++;
