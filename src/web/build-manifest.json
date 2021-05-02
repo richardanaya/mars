@@ -50,8 +50,12 @@
       "bytes": 254,
       "imports": []
     },
+    "_snowpack/pkg/showdown.js": {
+      "bytes": 158293,
+      "imports": []
+    },
     "CodeCell.js": {
-      "bytes": 4136,
+      "bytes": 4327,
       "imports": [
         {
           "path": "_snowpack/pkg/lit.js",
@@ -67,6 +71,10 @@
         },
         {
           "path": "util.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "_snowpack/pkg/showdown.js",
           "kind": "import-statement"
         }
       ]
@@ -121,7 +129,7 @@
       "exports": [],
       "inputs": {
         "_snowpack/pkg/lit.js": {
-          "bytesInOutput": 14975
+          "bytesInOutput": 15070
         },
         "_snowpack/pkg/lit/decorators.js": {
           "bytesInOutput": 199
@@ -130,16 +138,19 @@
           "bytesInOutput": 497
         },
         "Notebook.js": {
-          "bytesInOutput": 50
+          "bytesInOutput": 51
         },
         "LoadingScreen.js": {
-          "bytesInOutput": 2404
+          "bytesInOutput": 2405
         },
         "util.js": {
-          "bytesInOutput": 142
+          "bytesInOutput": 143
+        },
+        "_snowpack/pkg/showdown.js": {
+          "bytesInOutput": 81798
         },
         "CodeCell.js": {
-          "bytesInOutput": 2348
+          "bytesInOutput": 2412
         },
         "CpuInfo.js": {
           "bytesInOutput": 910
@@ -148,7 +159,7 @@
           "bytesInOutput": 155
         }
       },
-      "bytes": 21861
+      "bytes": 103821
     }
   }
 }

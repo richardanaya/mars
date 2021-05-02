@@ -25,6 +25,7 @@
     "lit": "^2.0.0-rc.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "showdown": "^1.9.1",
     "styled-components": "^5.2.1"
   }
 }

@@ -2,6 +2,9 @@ import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
 import { getCurrentNotebookId } from "./Notebook";
 import { defined, sleep } from "./util";
+import { Converter } from "showdown";
+
+let converter = new Converter();
 
 const { EditorState, basicSetup } = CM["@codemirror/basic-setup"];
 const { EditorView, keymap } = CM["@codemirror/view"];
@@ -111,7 +114,9 @@ class CodeCell extends LitElement {
             outputCell.innerHTML += a.log.replaceAll("\n", "<br>");
             outputCell.innerHTML += "<hr/>";
           }
-          if (a.html) {
+          if (a.markdown) {
+            outputCell.innerHTML += converter.makeHtml(a.markdown);
+          } else if (a.html) {
             outputCell.innerHTML += a.html;
           } else if (a.image) {
             outputCell.innerHTML += `<img src="${a.image}">`;
