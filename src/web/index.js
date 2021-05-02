@@ -4290,7 +4290,10 @@ var myTheme = EditorView.theme({
   ".cm-gutters": {
     backgroundColor: "#3a1100",
     color: "#e0a877",
-    border: "solid 1px #e0a877"
+    border: "solid 1px #e0a877",
+    fontSize: "8px",
+    lineHeight: "18px",
+    userSelect: "none"
   }
 }, {dark: true});
 var CodeCell = class extends h$2 {
@@ -4299,20 +4302,50 @@ var CodeCell = class extends h$2 {
   }
   render() {
     return T`<div class="code-cell">
-      hey
       <div class="code-cell-editor"></div>
       <div class="code-cell-output-container" style="display:none">
         <div class="code-cell-menu">
-          <div class="code-cell-menu-item">output</div>
-          <div class="code-cell-menu-item">html</div>
-          <div class="code-cell-menu-item">text</div>
-          <div class="code-cell-menu-item">markdown</div>
-          <div class="code-cell-menu-item">log</div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-output"
+            style="display:none"
+          >
+            output
+          </div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-html"
+            style="display:none"
+          >
+            html
+          </div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-text"
+            style="display:none"
+          >
+            text
+          </div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-markdown"
+            style="display:none"
+          >
+            markdown
+          </div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-log"
+            style="display:none"
+          >
+            log
+          </div>
         </div>
         <div class="code-cell-output-shell">
           <div class="code-cell-minimize">+</div>
 
-          <div class="code-cell-output"></div>
+          <div class="code-cell-output">
+            <div class="code-cell-output-output" style="display:none"></div>
+            <div class="code-cell-output-text" style="display:none"></div>
+            <div class="code-cell-output-markdown" style="display:none"></div>
+            <div class="code-cell-output-html" style="display:none"></div>
+            <div class="code-cell-output-log" style="display:none"></div>
+          </div>
         </div>
       </div>
     </div>`;
@@ -4351,13 +4384,13 @@ var CodeCell = class extends h$2 {
       if (r2 == null) {
         await sleep(1e3);
       } else {
-        let outputCell = defined(this.querySelector(".code-cell-output"));
+        let a2 = JSON.parse(r2.result);
         try {
-          let a2 = JSON.parse(r2.result);
+          a2 = JSON.parse(a2.text);
           a2 = JSON.parse(a2);
           this.handleResult(a2);
         } catch (e2) {
-          outputCell.innerHTML = r2.result;
+          this.handleResult(a2);
         }
         return;
       }
@@ -4365,26 +4398,34 @@ var CodeCell = class extends h$2 {
     }
   }
   handleResult(a2) {
-    let outputCell = defined(this.querySelector(".code-cell-output"));
-    outputCell.innerHTML = "";
     if (a2.log) {
-      outputCell.innerHTML += a2.log.trim().replaceAll("\n", "<br>");
+      let o2 = defined(this.querySelector(".code-cell-output-log"));
+      o2.style.display = "block";
+      o2.innerHTML = a2.log.trim().replaceAll("\n", "<br>");
     }
     if (a2.markdown) {
-      outputCell.innerHTML += converter.makeHtml(a2.markdown);
-    } else if (a2.html) {
-      outputCell.innerHTML += a2.html;
-    } else if (a2.image) {
-      outputCell.innerHTML += `<img src="${a2.image}">`;
-    } else if (a2.text) {
-      outputCell.innerHTML += a2.text.replaceAll("\n", "<br>");
-    } else {
-      outputCell.innerHTML += a2;
+      let o2 = defined(this.querySelector(".code-cell-output-markdown"));
+      o2.style.display = "block";
+      o2.innerHTML = converter.makeHtml(a2.markdown);
+    }
+    if (a2.html) {
+      let o2 = defined(this.querySelector(".code-cell-output-html"));
+      o2.style.display = "block";
+      o2.innerHTML = a2.html;
+    }
+    if (a2.image) {
+      let o2 = defined(this.querySelector(".code-cell-output-html"));
+      o2.style.display = "block";
+      o2.innerHTML = `<img src="${a2.image}">`;
+    }
+    if (a2.text) {
+      let o2 = defined(this.querySelector(".code-cell-output-text"));
+      o2.style.display = "block";
+      o2.innerHTML = a2.text.replaceAll("\n", "<br>");
     }
   }
   async runCodeCell() {
     defined(this.querySelector(".code-cell-output-container")).style.display = "block";
-    defined(this.querySelector(".code-cell-output")).innerHTML = "Processing...";
     let r2 = await fetch(`http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/execute`, {
       method: "POST",
       body: defined(this.editorView).state.doc.toString()

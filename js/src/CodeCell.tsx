@@ -57,16 +57,47 @@ class CodeCell extends LitElement {
       <div class="code-cell-editor"></div>
       <div class="code-cell-output-container" style="display:none">
         <div class="code-cell-menu">
-          <div class="code-cell-menu-item">output</div>
-          <div class="code-cell-menu-item">html</div>
-          <div class="code-cell-menu-item">text</div>
-          <div class="code-cell-menu-item">markdown</div>
-          <div class="code-cell-menu-item">log</div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-output"
+            style="display:none"
+          >
+            output
+          </div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-html"
+            style="display:none"
+          >
+            html
+          </div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-text"
+            style="display:none"
+          >
+            text
+          </div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-markdown"
+            style="display:none"
+          >
+            markdown
+          </div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-log"
+            style="display:none"
+          >
+            log
+          </div>
         </div>
         <div class="code-cell-output-shell">
           <div class="code-cell-minimize">+</div>
 
-          <div class="code-cell-output"></div>
+          <div class="code-cell-output">
+            <div class="code-cell-output-output" style="display:none"></div>
+            <div class="code-cell-output-text" style="display:none"></div>
+            <div class="code-cell-output-markdown" style="display:none"></div>
+            <div class="code-cell-output-html" style="display:none"></div>
+            <div class="code-cell-output-log" style="display:none"></div>
+          </div>
         </div>
       </div>
     </div>`;
@@ -112,13 +143,21 @@ class CodeCell extends LitElement {
       if (r == null) {
         await sleep(1000);
       } else {
-        let outputCell = defined(this.querySelector(".code-cell-output"));
+        let o = JSON.parse(r.result);
         try {
-          let a = JSON.parse(r.result);
-          a = JSON.parse(a);
-          this.handleResult(a);
+          if (typeof o.text === "string") {
+            let a = JSON.parse(o.text);
+            if(typeof a === "string"){
+              a = JSON.parse(a);
+              this.handleResult(a);
+            } else {
+              this.handleResult(o);
+            }
+          } else {
+            this.handleResult(o);
+          }
         } catch (e) {
-          outputCell.innerHTML = r.result;
+          this.handleResult(o);
         }
         return;
       }
@@ -127,29 +166,79 @@ class CodeCell extends LitElement {
   }
 
   handleResult(a: any) {
-    let outputCell = defined(this.querySelector(".code-cell-output"));
-    outputCell.innerHTML = "";
+    defined(this.querySelector(".code-cell-menu-item-log")).style.display =
+      "none";
+    defined(this.querySelector(".code-cell-menu-item-html")).style.display =
+      "none";
+    defined(this.querySelector(".code-cell-menu-item-text")).style.display =
+      "none";
+    defined(this.querySelector(".code-cell-menu-item-markdown")).style.display =
+      "none";
+    defined(this.querySelector(".code-cell-output-log")).style.display = "none";
+    defined(this.querySelector(".code-cell-output-html")).style.display =
+      "none";
+    defined(this.querySelector(".code-cell-output-text")).style.display =
+      "none";
+    defined(this.querySelector(".code-cell-output-markdown")).style.display =
+      "none";
+
+    let shown = false;
     if (a.log) {
-      outputCell.innerHTML += a.log.trim().replaceAll("\n", "<br>");
+      defined(this.querySelector(".code-cell-menu-item-log")).style.display =
+        "inline-block";
+      let o = defined(this.querySelector(".code-cell-output-log"));
+      if (!shown) {
+        o.style.display = "block";
+        shown = true;
+      }
+      o.innerHTML = a.log.trim().replaceAll("\n", "<br>");
     }
     if (a.markdown) {
-      outputCell.innerHTML += converter.makeHtml(a.markdown);
-    } else if (a.html) {
-      outputCell.innerHTML += a.html;
-    } else if (a.image) {
-      outputCell.innerHTML += `<img src="${a.image}">`;
-    } else if (a.text) {
-      outputCell.innerHTML += a.text.replaceAll("\n", "<br>");
-    } else {
-      outputCell.innerHTML += a;
+      defined(
+        this.querySelector(".code-cell-menu-item-markdown")
+      ).style.display = "inline-block";
+      let o = defined(this.querySelector(".code-cell-output-markdown"));
+      if (!shown) {
+        o.style.display = "block";
+        shown = true;
+      }
+      o.innerHTML = converter.makeHtml(a.markdown);
+    }
+    if (a.html) {
+      defined(this.querySelector(".code-cell-menu-item-html")).style.display =
+        "inline-block";
+      let o = defined(this.querySelector(".code-cell-output-html"));
+      if (!shown) {
+        o.style.display = "block";
+        shown = true;
+      }
+      o.innerHTML = a.html;
+    }
+    if (a.image) {
+      defined(this.querySelector(".code-cell-menu-item-html")).style.display =
+        "inline-block";
+      let o = defined(this.querySelector(".code-cell-output-html"));
+      if (!shown) {
+        o.style.display = "block";
+        shown = true;
+      }
+      o.innerHTML = `<img src="${a.image}">`;
+    }
+    if (a.text) {
+      defined(this.querySelector(".code-cell-menu-item-text")).style.display =
+        "inline-block";
+      let o = defined(this.querySelector(".code-cell-output-text"));
+      if (!shown) {
+        o.style.display = "block";
+        shown = true;
+      }
+      o.innerHTML = a.text.replaceAll("\n", "<br>");
     }
   }
 
   async runCodeCell() {
     defined(this.querySelector(".code-cell-output-container")).style.display =
       "block";
-    defined(this.querySelector(".code-cell-output")).innerHTML =
-      "Processing...";
     let r = (await fetch(
       `http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/execute`,
       {

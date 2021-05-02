@@ -20,7 +20,7 @@ body {
 }
 .layout {
   display: grid;
-  grid-template-columns: 3rem auto;
+  grid-template-columns: 3rem auto 3rem;
   grid-template-rows: 4rem auto;
   height: 100%;
 }
@@ -28,6 +28,7 @@ body {
   padding: 0.5rem;
   color: #fba244;
   padding-left: 1rem;
+  grid-column: span 2;
 }
 .actions {
   grid-row: span 2;
@@ -64,6 +65,7 @@ body {
   padding: 1.4rem 0.7rem 0.7rem 0.7rem;
   clip-path: polygon(30px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 30px);
   background: black;
+  border-radius: 5px;
 }
 .code-cell-minimize {
   color: #777;
@@ -72,9 +74,10 @@ body {
   left: 6px;
   line-height: 5px;
   cursor: pointer;
+  user-select: none;
 }
 .code-cell-output-container {
-  margin-top: 1rem;
+  margin: 1rem 0;
   position: relative;
 }
 .code-cell-output-shell {
@@ -89,6 +92,7 @@ body {
   left: 30px;
   color: #555;
   z-index: 999;
+  user-select: none;
 }
 .code-cell-menu-item {
   text-transform: uppercase;

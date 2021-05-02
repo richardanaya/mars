@@ -62,17 +62,17 @@ pub fn start_context() -> String {
                     thread::sleep(time::Duration::from_millis(1500));
                     let mut context_collection = globals::get::<ContextCollection>();
                     let mut core = context_collection.context_map.get_mut(&id2).unwrap();
-                    let mut t = core.outputs.join("<br/>");
+                    let t = core.outputs.join("\n");
                     core.outputs = vec![];
                     drop(context_collection);
-                    if t.len() > 0 {
+                    /* if t.len() > 0 {
                         // TODO: improve output
                         //t.push_str("<br><hr><br>");
                     }
                     if let Some(tp) = output.get("text/plain") {
                         t.push_str(tp);
-                    }
-                    if let Some(duration) = output.timing {
+                    }*/
+                    /*if let Some(duration) = output.timing {
                         t.push_str(&format!("Took {}ms", duration.as_millis()));
                         for phase in output.phases {
                             t.push_str(&format!(
@@ -81,8 +81,12 @@ pub fn start_context() -> String {
                                 phase.duration.as_millis()
                             ));
                         }
-                    }
-                    t
+                    }*/
+                    tide::prelude::json!({
+                        "log": if t.len()>0 { Some(t) } else { None },
+                        "text":output.get("text/plain"),
+                    })
+                    .to_string()
                 }
                 Err(evcxr::Error::CompilationErrors(_errors)) => "Failed to compile".to_string(),
                 Err(err) => {
