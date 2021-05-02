@@ -55,7 +55,7 @@
       "imports": []
     },
     "CodeCell.js": {
-      "bytes": 4327,
+      "bytes": 4428,
       "imports": [
         {
           "path": "_snowpack/pkg/lit.js",
@@ -119,47 +119,47 @@
       "imports": [],
       "inputs": {
         "index.html.inline.0.css": {
-          "bytesInOutput": 732
+          "bytesInOutput": 879
         }
       },
-      "bytes": 733
+      "bytes": 909
     },
     "../~~bundle~~/index.js": {
       "imports": [],
       "exports": [],
       "inputs": {
         "_snowpack/pkg/lit.js": {
-          "bytesInOutput": 15070
+          "bytesInOutput": 22008
         },
         "_snowpack/pkg/lit/decorators.js": {
-          "bytesInOutput": 199
+          "bytesInOutput": 371
         },
         "TextTypography.js": {
-          "bytesInOutput": 497
+          "bytesInOutput": 972
         },
         "Notebook.js": {
-          "bytesInOutput": 51
+          "bytesInOutput": 154
         },
         "LoadingScreen.js": {
-          "bytesInOutput": 2405
+          "bytesInOutput": 3281
         },
         "util.js": {
-          "bytesInOutput": 143
+          "bytesInOutput": 246
         },
         "_snowpack/pkg/showdown.js": {
-          "bytesInOutput": 81798
+          "bytesInOutput": 138195
         },
         "CodeCell.js": {
-          "bytesInOutput": 2412
+          "bytesInOutput": 4161
         },
         "CpuInfo.js": {
-          "bytesInOutput": 910
+          "bytesInOutput": 1286
         },
         "index.js": {
-          "bytesInOutput": 155
+          "bytesInOutput": 164
         }
       },
-      "bytes": 103821
+      "bytes": 171043
     }
   }
 }

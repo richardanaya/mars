@@ -5,7 +5,7 @@ module.exports = {
   },
   optimize: {
     bundle: true,
-    minify: true,
+    //minify: true,
     target: "es2020",
   },
 };

@@ -92,7 +92,7 @@ class CodeCell extends LitElement {
     );
   }
 
-  async load_result(handle: number) {
+  async loadResult(handle: number) {
     let c = 0;
     while (true) {
       if (c > 60) {
@@ -102,29 +102,14 @@ class CodeCell extends LitElement {
         `http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/result/` +
           handle
       ).then((_) => _.json())) as { result: string };
-      let outputCell = defined(this.querySelector(".code-cell-output"));
       if (r == null) {
         await sleep(1000);
       } else {
+        let outputCell = defined(this.querySelector(".code-cell-output"));
         try {
           let a = JSON.parse(r.result);
           a = JSON.parse(a);
-          outputCell.innerHTML = "";
-          if (a.log) {
-            outputCell.innerHTML += a.log.replaceAll("\n", "<br>");
-            outputCell.innerHTML += "<hr/>";
-          }
-          if (a.markdown) {
-            outputCell.innerHTML += converter.makeHtml(a.markdown);
-          } else if (a.html) {
-            outputCell.innerHTML += a.html;
-          } else if (a.image) {
-            outputCell.innerHTML += `<img src="${a.image}">`;
-          } else if (a.text) {
-            outputCell.innerHTML += a.text.replaceAll("\n", "<br>");
-          } else {
-            outputCell.innerHTML += r.result;
-          }
+          this.handleResult(a);
         } catch (e) {
           outputCell.innerHTML = r.result;
         }
@@ -134,16 +119,40 @@ class CodeCell extends LitElement {
     }
   }
 
+  handleResult(a: any) {
+    let outputCell = defined(this.querySelector(".code-cell-output"));
+    outputCell.innerHTML = "";
+    if (a.log) {
+      outputCell.innerHTML += a.log.replaceAll("\n", "<br>");
+      outputCell.innerHTML += "<hr/>";
+    }
+    if (a.markdown) {
+      outputCell.innerHTML += converter.makeHtml(a.markdown);
+    } else if (a.html) {
+      outputCell.innerHTML += a.html;
+    } else if (a.image) {
+      outputCell.innerHTML += `<img src="${a.image}">`;
+    } else if (a.text) {
+      outputCell.innerHTML += a.text.replaceAll("\n", "<br>");
+    } else {
+      outputCell.innerHTML += a;
+    }
+  }
+
   async runCodeCell() {
     defined(this.querySelector(".code-cell-output")).innerHTML =
       "Processing...";
-    let text = await fetch(
+    let r = (await fetch(
       `http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/execute`,
       {
         method: "POST",
         body: defined(this.editorView).state.doc.toString(),
       }
-    ).then((_) => _.text());
-    this.load_result(parseFloat(text));
+    ).then((_) => _.json())) as { handle?: any; result?: any };
+    if (r.handle) {
+      this.loadResult(parseFloat(r.handle));
+    } else {
+      this.handleResult(r.result);
+    }
   }
 }

@@ -31,9 +31,20 @@ fn main() {
         app.at("notebook/:notebook_id/execute")
             .post(move |mut req: Request<()>| {
                 let id = req.param("notebook_id").unwrap().to_string();
-                let f = task::block_on(async { req.body_string().await.unwrap() });
-                let r = execute_in_context(id, f);
-                async move { Ok(r.into()) as tide::Result }
+                let text = task::block_on(async { req.body_string().await.unwrap() });
+                let r = if text.starts_with("%%markdown") {
+                    let md = text
+                        .lines()
+                        .skip(1)
+                        .map(|x| x.to_owned())
+                        .collect::<Vec<String>>()
+                        .join("\n");
+                    Ok(json!({ "result": { "markdown": md }}))
+                } else {
+                    let handle = execute_in_context(id, text);
+                    Ok(json!({ "handle": handle }))
+                };
+                async move { r }
             });
 
         app.at("notebook/:notebook_id/result/:n")
