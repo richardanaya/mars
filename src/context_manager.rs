@@ -66,7 +66,8 @@ pub fn start_context() -> String {
                     core.outputs = vec![];
                     drop(context_collection);
                     if t.len() > 0 {
-                        t.push_str("<br><hr><br>");
+                        // TODO: improve output
+                        //t.push_str("<br><hr><br>");
                     }
                     if let Some(tp) = output.get("text/plain") {
                         t.push_str(tp);

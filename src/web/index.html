@@ -6,6 +6,7 @@
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200;400;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="icon" href="/red_circle.svg">
     <style>/* index.html.inline.0.css */
@@ -36,6 +37,11 @@ body {
   flex-direction: column;
   align-items: center;
   padding-top: 1rem;
+  transform: translate(-44px, 0px);
+  transition: transform 0.3s;
+}
+.actions:hover {
+  transform: translate(0px, 0px);
 }
 .notebook {
   padding: 0 1rem;
@@ -53,11 +59,52 @@ body {
   color: white;
   cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>\1f680</text></svg>"), auto;
 }
+.code-cell-output {
+  color: #929292;
+  padding: 1.4rem 0.7rem 0.7rem 0.7rem;
+  clip-path: polygon(30px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 30px);
+  background: black;
+}
+.code-cell-minimize {
+  color: #777;
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  line-height: 5px;
+  cursor: pointer;
+}
+.code-cell-output-container {
+  margin-top: 1rem;
+  position: relative;
+}
+.code-cell-output-shell {
+  color: #929292;
+  padding: 1px;
+  clip-path: polygon(10px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 10px);
+  background: #333;
+  position: relative;
+}
+.code-cell-menu {
+  position: absolute;
+  left: 30px;
+  color: #555;
+  z-index: 999;
+}
+.code-cell-menu-item {
+  text-transform: uppercase;
+  font-size: 10px;
+  display: inline-block;
+  font-weight: 700;
+  cursor: pointer;
+}
+.code-cell-menu-item:hover {
+  text-decoration: underline;
+}
 </style>
   </head>
   <body>
     <loading-screen></loading-screen>
-    <div class="layout" style="opacity:0; transition: opacity 1s ease-in-out;">
+    <div class="layout" style="opacity: 0; transition: opacity 1s ease-in-out">
       <div class="actions">
         <div class="icon-button" id="run-all">
           <span class="material-icons"> play_circle_outline </span>

@@ -4294,14 +4294,6 @@ var myTheme = EditorView.theme({
   }
 }, {dark: true});
 var CodeCell = class extends h$2 {
-  static get styles() {
-    return r$1`
-      .code-cell-output {
-        color: #929292;
-        padding: 1rem;
-      }
-    `;
-  }
   createRenderRoot() {
     return this;
   }
@@ -4309,7 +4301,20 @@ var CodeCell = class extends h$2 {
     return T`<div class="code-cell">
       hey
       <div class="code-cell-editor"></div>
-      <div class="code-cell-output" style="color: white"></div>
+      <div class="code-cell-output-container" style="display:none">
+        <div class="code-cell-menu">
+          <div class="code-cell-menu-item">output</div>
+          <div class="code-cell-menu-item">html</div>
+          <div class="code-cell-menu-item">text</div>
+          <div class="code-cell-menu-item">markdown</div>
+          <div class="code-cell-menu-item">log</div>
+        </div>
+        <div class="code-cell-output-shell">
+          <div class="code-cell-minimize">+</div>
+
+          <div class="code-cell-output"></div>
+        </div>
+      </div>
     </div>`;
   }
   firstUpdated() {
@@ -4363,8 +4368,7 @@ var CodeCell = class extends h$2 {
     let outputCell = defined(this.querySelector(".code-cell-output"));
     outputCell.innerHTML = "";
     if (a2.log) {
-      outputCell.innerHTML += a2.log.replaceAll("\n", "<br>");
-      outputCell.innerHTML += "<hr/>";
+      outputCell.innerHTML += a2.log.trim().replaceAll("\n", "<br>");
     }
     if (a2.markdown) {
       outputCell.innerHTML += converter.makeHtml(a2.markdown);
@@ -4379,6 +4383,7 @@ var CodeCell = class extends h$2 {
     }
   }
   async runCodeCell() {
+    defined(this.querySelector(".code-cell-output-container")).style.display = "block";
     defined(this.querySelector(".code-cell-output")).innerHTML = "Processing...";
     let r2 = await fetch(`http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/execute`, {
       method: "POST",

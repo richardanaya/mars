@@ -51,11 +51,20 @@ class CodeCell extends LitElement {
 
   render() {
     return html`<div class="code-cell">
-      hey
       <div class="code-cell-editor"></div>
       <div class="code-cell-output-container" style="display:none">
-        <div class="code-cell-minimize">+</div>
-        <div class="code-cell-output"></div>
+        <div class="code-cell-menu">
+          <div class="code-cell-menu-item">output</div>
+          <div class="code-cell-menu-item">html</div>
+          <div class="code-cell-menu-item">text</div>
+          <div class="code-cell-menu-item">markdown</div>
+          <div class="code-cell-menu-item">log</div>
+        </div>
+        <div class="code-cell-output-shell">
+          <div class="code-cell-minimize">+</div>
+
+          <div class="code-cell-output"></div>
+        </div>
       </div>
     </div>`;
   }
@@ -118,8 +127,7 @@ class CodeCell extends LitElement {
     let outputCell = defined(this.querySelector(".code-cell-output"));
     outputCell.innerHTML = "";
     if (a.log) {
-      outputCell.innerHTML += a.log.replaceAll("\n", "<br>");
-      outputCell.innerHTML += "<hr/>";
+      outputCell.innerHTML += a.log.trim().replaceAll("\n", "<br>");
     }
     if (a.markdown) {
       outputCell.innerHTML += converter.makeHtml(a.markdown);
