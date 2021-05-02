@@ -36,6 +36,9 @@ let myTheme = EditorView.theme(
       backgroundColor: "#3a1100",
       color: "#e0a877",
       border: "solid 1px #e0a877",
+      fontSize: "8px",
+      lineHeight: "18px",
+      userSelect: "none",
     },
   },
   { dark: true }
