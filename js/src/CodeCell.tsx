@@ -44,14 +44,6 @@ let myTheme = EditorView.theme(
 @customElement("code-cell")
 class CodeCell extends LitElement {
   editorView?: any;
-  static get styles() {
-    return css`
-      .code-cell-output {
-        color: #929292;
-        padding: 1rem;
-      }
-    `;
-  }
 
   createRenderRoot() {
     return this;
@@ -61,7 +53,10 @@ class CodeCell extends LitElement {
     return html`<div class="code-cell">
       hey
       <div class="code-cell-editor"></div>
-      <div class="code-cell-output" style="color: white"></div>
+      <div class="code-cell-output-container" style="display:none">
+        <div class="code-cell-minimize">+</div>
+        <div class="code-cell-output"></div>
+      </div>
     </div>`;
   }
 
@@ -140,6 +135,8 @@ class CodeCell extends LitElement {
   }
 
   async runCodeCell() {
+    defined(this.querySelector(".code-cell-output-container")).style.display =
+      "block";
     defined(this.querySelector(".code-cell-output")).innerHTML =
       "Processing...";
     let r = (await fetch(
