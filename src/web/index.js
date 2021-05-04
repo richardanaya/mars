@@ -4306,41 +4306,34 @@ var CodeCell = class extends h$2 {
       <div class="code-cell-output-container" style="display:none">
         <div class="code-cell-menu">
           <div
-            class="code-cell-menu-item code-cell-menu-item-output"
-            style="display:none"
-          >
-            output
-          </div>
-          <div
             class="code-cell-menu-item code-cell-menu-item-html"
             style="display:none"
           >
-            html
+            ☲ html
           </div>
           <div
             class="code-cell-menu-item code-cell-menu-item-text"
             style="display:none"
           >
-            text
+            ☶ text
           </div>
           <div
             class="code-cell-menu-item code-cell-menu-item-markdown"
             style="display:none"
           >
-            markdown
+            ☷ markdown
           </div>
           <div
             class="code-cell-menu-item code-cell-menu-item-log"
             style="display:none"
           >
-            log
+            ☰ log
           </div>
         </div>
         <div class="code-cell-output-shell">
           <div class="code-cell-minimize">+</div>
-
           <div class="code-cell-output">
-            <div class="code-cell-output-output" style="display:none"></div>
+            <div class="code-cell-loading"></div>
             <div class="code-cell-output-text" style="display:none"></div>
             <div class="code-cell-output-markdown" style="display:none"></div>
             <div class="code-cell-output-html" style="display:none"></div>
@@ -4373,6 +4366,30 @@ var CodeCell = class extends h$2 {
       parent: this.querySelector(".code-cell-editor")
     });
     defined(document.querySelector("#run-all")).addEventListener("click", () => this.runCodeCell());
+    let hide = (selector) => {
+      let c2 = defined(this.querySelector(selector));
+      c2.style.display = "none";
+    };
+    let toggleVisibility = (selector) => {
+      hide(".code-cell-output-markdown");
+      hide(".code-cell-output-text");
+      hide(".code-cell-output-html");
+      hide(".code-cell-output-log");
+      let c2 = defined(this.querySelector(selector));
+      c2.style.display = "block";
+    };
+    defined(this.querySelector(".code-cell-menu-item-markdown")).addEventListener("click", () => {
+      toggleVisibility(".code-cell-output-markdown");
+    });
+    defined(this.querySelector(".code-cell-menu-item-html")).addEventListener("click", () => {
+      toggleVisibility(".code-cell-output-html");
+    });
+    defined(this.querySelector(".code-cell-menu-item-log")).addEventListener("click", () => {
+      toggleVisibility(".code-cell-output-log");
+    });
+    defined(this.querySelector(".code-cell-menu-item-text")).addEventListener("click", () => {
+      toggleVisibility(".code-cell-output-text");
+    });
   }
   async loadResult(handle) {
     let c2 = 0;
@@ -4384,13 +4401,21 @@ var CodeCell = class extends h$2 {
       if (r2 == null) {
         await sleep(1e3);
       } else {
-        let a2 = JSON.parse(r2.result);
+        let o2 = JSON.parse(r2.result);
         try {
-          a2 = JSON.parse(a2.text);
-          a2 = JSON.parse(a2);
-          this.handleResult(a2);
+          if (typeof o2.text === "string") {
+            let a2 = JSON.parse(o2.text);
+            if (typeof a2 === "string") {
+              a2 = JSON.parse(a2);
+              this.handleResult(a2);
+            } else {
+              this.handleResult(o2);
+            }
+          } else {
+            this.handleResult(o2);
+          }
         } catch (e2) {
-          this.handleResult(a2);
+          this.handleResult(o2);
         }
         return;
       }
@@ -4398,34 +4423,84 @@ var CodeCell = class extends h$2 {
     }
   }
   handleResult(a2) {
+    let c2 = defined(this.querySelector(".code-cell-loading"));
+    c2.style.display = "none";
+    defined(this.querySelector(".code-cell-menu")).style.display = "block";
+    defined(this.querySelector(".code-cell-menu-item-log")).style.display = "none";
+    defined(this.querySelector(".code-cell-menu-item-html")).style.display = "none";
+    defined(this.querySelector(".code-cell-menu-item-text")).style.display = "none";
+    defined(this.querySelector(".code-cell-menu-item-markdown")).style.display = "none";
+    defined(this.querySelector(".code-cell-output-log")).style.display = "none";
+    defined(this.querySelector(".code-cell-output-html")).style.display = "none";
+    defined(this.querySelector(".code-cell-output-text")).style.display = "none";
+    defined(this.querySelector(".code-cell-output-markdown")).style.display = "none";
+    let shown = false;
+    if (a2.text) {
+      defined(this.querySelector(".code-cell-menu-item-text")).style.display = "inline-block";
+      let o2 = defined(this.querySelector(".code-cell-output-text"));
+      if (!shown) {
+        o2.style.display = "block";
+        shown = true;
+      }
+      o2.innerHTML = a2.text.replaceAll("\n", "<br>");
+    }
     if (a2.log) {
+      defined(this.querySelector(".code-cell-menu-item-log")).style.display = "inline-block";
       let o2 = defined(this.querySelector(".code-cell-output-log"));
-      o2.style.display = "block";
+      if (!shown) {
+        o2.style.display = "block";
+        shown = true;
+      }
       o2.innerHTML = a2.log.trim().replaceAll("\n", "<br>");
     }
     if (a2.markdown) {
+      defined(this.querySelector(".code-cell-menu-item-markdown")).style.display = "inline-block";
       let o2 = defined(this.querySelector(".code-cell-output-markdown"));
-      o2.style.display = "block";
+      if (!shown) {
+        o2.style.display = "block";
+        shown = true;
+      }
       o2.innerHTML = converter.makeHtml(a2.markdown);
     }
     if (a2.html) {
+      defined(this.querySelector(".code-cell-menu-item-html")).style.display = "inline-block";
       let o2 = defined(this.querySelector(".code-cell-output-html"));
-      o2.style.display = "block";
+      if (!shown) {
+        o2.style.display = "block";
+        shown = true;
+      }
       o2.innerHTML = a2.html;
     }
     if (a2.image) {
+      defined(this.querySelector(".code-cell-menu-item-html")).style.display = "inline-block";
       let o2 = defined(this.querySelector(".code-cell-output-html"));
-      o2.style.display = "block";
+      if (!shown) {
+        o2.style.display = "block";
+        shown = true;
+      }
       o2.innerHTML = `<img src="${a2.image}">`;
-    }
-    if (a2.text) {
-      let o2 = defined(this.querySelector(".code-cell-output-text"));
-      o2.style.display = "block";
-      o2.innerHTML = a2.text.replaceAll("\n", "<br>");
     }
   }
   async runCodeCell() {
-    defined(this.querySelector(".code-cell-output-container")).style.display = "block";
+    let hide = (selector) => {
+      let c2 = defined(this.querySelector(selector));
+      c2.style.display = "none";
+    };
+    let show = (selector) => {
+      let c2 = defined(this.querySelector(selector));
+      c2.style.display = "block";
+    };
+    hide(".code-cell-output-markdown");
+    hide(".code-cell-output-text");
+    hide(".code-cell-output-html");
+    hide(".code-cell-output-log");
+    hide(".code-cell-menu-item-log");
+    hide(".code-cell-menu-item-text");
+    hide(".code-cell-menu-item-markdown");
+    hide(".code-cell-menu-item-html");
+    hide(".code-cell-menu");
+    show(".code-cell-loading");
+    show(".code-cell-output-container");
     let r2 = await fetch(`http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/execute`, {
       method: "POST",
       body: defined(this.editorView).state.doc.toString()

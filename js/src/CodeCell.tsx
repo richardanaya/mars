@@ -58,41 +58,34 @@ class CodeCell extends LitElement {
       <div class="code-cell-output-container" style="display:none">
         <div class="code-cell-menu">
           <div
-            class="code-cell-menu-item code-cell-menu-item-output"
-            style="display:none"
-          >
-            output
-          </div>
-          <div
             class="code-cell-menu-item code-cell-menu-item-html"
             style="display:none"
           >
-            html
+            ☲ html
           </div>
           <div
             class="code-cell-menu-item code-cell-menu-item-text"
             style="display:none"
           >
-            text
+            ☶ text
           </div>
           <div
             class="code-cell-menu-item code-cell-menu-item-markdown"
             style="display:none"
           >
-            markdown
+            ☷ markdown
           </div>
           <div
             class="code-cell-menu-item code-cell-menu-item-log"
             style="display:none"
           >
-            log
+            ☰ log
           </div>
         </div>
         <div class="code-cell-output-shell">
           <div class="code-cell-minimize">+</div>
-
           <div class="code-cell-output">
-            <div class="code-cell-output-output" style="display:none"></div>
+            <div class="code-cell-loading"></div>
             <div class="code-cell-output-text" style="display:none"></div>
             <div class="code-cell-output-markdown" style="display:none"></div>
             <div class="code-cell-output-html" style="display:none"></div>
@@ -128,6 +121,41 @@ class CodeCell extends LitElement {
     defined(document.querySelector("#run-all")).addEventListener("click", () =>
       this.runCodeCell()
     );
+
+    let hide = (selector: string) => {
+      let c = defined(this.querySelector(selector)) as HTMLElement;
+      c.style.display = "none";
+    };
+
+    let toggleVisibility = (selector: string) => {
+      hide(".code-cell-output-markdown");
+      hide(".code-cell-output-text");
+      hide(".code-cell-output-html");
+      hide(".code-cell-output-log");
+      let c = defined(this.querySelector(selector)) as HTMLElement;
+      c.style.display = "block";
+    };
+
+    defined(
+      this.querySelector(".code-cell-menu-item-markdown") as HTMLElement
+    ).addEventListener("click", () => {
+      toggleVisibility(".code-cell-output-markdown");
+    });
+    defined(
+      this.querySelector(".code-cell-menu-item-html") as HTMLElement
+    ).addEventListener("click", () => {
+      toggleVisibility(".code-cell-output-html");
+    });
+    defined(
+      this.querySelector(".code-cell-menu-item-log") as HTMLElement
+    ).addEventListener("click", () => {
+      toggleVisibility(".code-cell-output-log");
+    });
+    defined(
+      this.querySelector(".code-cell-menu-item-text") as HTMLElement
+    ).addEventListener("click", () => {
+      toggleVisibility(".code-cell-output-text");
+    });
   }
 
   async loadResult(handle: number) {
@@ -147,7 +175,7 @@ class CodeCell extends LitElement {
         try {
           if (typeof o.text === "string") {
             let a = JSON.parse(o.text);
-            if(typeof a === "string"){
+            if (typeof a === "string") {
               a = JSON.parse(a);
               this.handleResult(a);
             } else {
@@ -166,6 +194,10 @@ class CodeCell extends LitElement {
   }
 
   handleResult(a: any) {
+    let c = defined(this.querySelector(".code-cell-loading")) as HTMLElement;
+    c.style.display = "none";
+    defined(this.querySelector(".code-cell-menu")).style.display =
+      "block";
     defined(this.querySelector(".code-cell-menu-item-log")).style.display =
       "none";
     defined(this.querySelector(".code-cell-menu-item-html")).style.display =
@@ -183,6 +215,16 @@ class CodeCell extends LitElement {
       "none";
 
     let shown = false;
+    if (a.text) {
+      defined(this.querySelector(".code-cell-menu-item-text")).style.display =
+        "inline-block";
+      let o = defined(this.querySelector(".code-cell-output-text"));
+      if (!shown) {
+        o.style.display = "block";
+        shown = true;
+      }
+      o.innerHTML = a.text.replaceAll("\n", "<br>");
+    }
     if (a.log) {
       defined(this.querySelector(".code-cell-menu-item-log")).style.display =
         "inline-block";
@@ -224,21 +266,32 @@ class CodeCell extends LitElement {
       }
       o.innerHTML = `<img src="${a.image}">`;
     }
-    if (a.text) {
-      defined(this.querySelector(".code-cell-menu-item-text")).style.display =
-        "inline-block";
-      let o = defined(this.querySelector(".code-cell-output-text"));
-      if (!shown) {
-        o.style.display = "block";
-        shown = true;
-      }
-      o.innerHTML = a.text.replaceAll("\n", "<br>");
-    }
   }
 
   async runCodeCell() {
-    defined(this.querySelector(".code-cell-output-container")).style.display =
-      "block";
+    let hide = (selector: string) => {
+      let c = defined(this.querySelector(selector)) as HTMLElement;
+      c.style.display = "none";
+    };
+
+    let show = (selector: string) => {
+      let c = defined(this.querySelector(selector)) as HTMLElement;
+      c.style.display = "block";
+    };
+
+    hide(".code-cell-output-markdown");
+    hide(".code-cell-output-text");
+    hide(".code-cell-output-html");
+    hide(".code-cell-output-log");
+    hide(".code-cell-menu-item-log");
+    hide(".code-cell-menu-item-text");
+    hide(".code-cell-menu-item-markdown");
+    hide(".code-cell-menu-item-html");
+    hide(".code-cell-menu");
+
+    show(".code-cell-loading");
+    show(".code-cell-output-container");
+
     let r = (await fetch(
       `http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/execute`,
       {
