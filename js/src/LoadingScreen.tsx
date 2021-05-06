@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
 import { getCurrentNotebookId, setCurrentNotebookId } from "./Notebook";
-import { sleep } from "./util";
+import anime from "animejs";
 
 @customElement("loading-screen")
 class LoadingScreen extends LitElement {
@@ -89,12 +89,22 @@ class LoadingScreen extends LitElement {
           ).then((_) => _.json());
           if (result.ready) {
             window.clearInterval(intervalHandle);
-            this.style.opacity = "0";
-            window.setTimeout(() => {
-              let app = document.querySelector(".layout");
-              if (app) app.style.opacity = 1;
-              this.remove();
-            }, 1000);
+            anime
+              .timeline({
+                easing: "easeOutExpo",
+                duration: 1000,
+              })
+              .add({
+                targets: this,
+                opacity: 0,
+              })
+              .add({
+                targets: document.querySelector(".layout"),
+                opacity: 1,
+                changeComplete: () => {
+                  this.remove();
+                },
+              });
             return;
           }
         } catch (e) {

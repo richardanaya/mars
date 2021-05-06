@@ -1,7 +1,7 @@
 {
   "inputs": {
     "index.html.inline.0.css": {
-      "bytes": 3797,
+      "bytes": 3850,
       "imports": []
     },
     "_snowpack/pkg/lit.js": {
@@ -29,8 +29,12 @@
       "bytes": 168,
       "imports": []
     },
+    "_snowpack/pkg/animejs.js": {
+      "bytes": 42039,
+      "imports": []
+    },
     "LoadingScreen.js": {
-      "bytes": 3487,
+      "bytes": 3663,
       "imports": [
         {
           "path": "_snowpack/pkg/lit.js",
@@ -42,6 +46,10 @@
         },
         {
           "path": "Notebook.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "_snowpack/pkg/animejs.js",
           "kind": "import-statement"
         }
       ]
@@ -55,7 +63,7 @@
       "imports": []
     },
     "CodeCell.js": {
-      "bytes": 9268,
+      "bytes": 11400,
       "imports": [
         {
           "path": "_snowpack/pkg/lit.js",
@@ -75,6 +83,10 @@
         },
         {
           "path": "_snowpack/pkg/showdown.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "_snowpack/pkg/animejs.js",
           "kind": "import-statement"
         }
       ]
@@ -119,10 +131,10 @@
       "imports": [],
       "inputs": {
         "index.html.inline.0.css": {
-          "bytesInOutput": 2940
+          "bytesInOutput": 2981
         }
       },
-      "bytes": 2970
+      "bytes": 3011
     },
     "../~~bundle~~/index.js": {
       "imports": [],
@@ -140,8 +152,11 @@
         "Notebook.js": {
           "bytesInOutput": 154
         },
+        "_snowpack/pkg/animejs.js": {
+          "bytesInOutput": 41412
+        },
         "LoadingScreen.js": {
-          "bytesInOutput": 3281
+          "bytesInOutput": 3419
         },
         "util.js": {
           "bytesInOutput": 246
@@ -150,7 +165,7 @@
           "bytesInOutput": 138195
         },
         "CodeCell.js": {
-          "bytesInOutput": 9036
+          "bytesInOutput": 11175
         },
         "CpuInfo.js": {
           "bytesInOutput": 1286
@@ -159,7 +174,7 @@
           "bytesInOutput": 164
         }
       },
-      "bytes": 175918
+      "bytes": 219636
     }
   }
 }

@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators.js";
 import { getCurrentNotebookId } from "./Notebook";
 import { defined, sleep } from "./util";
 import { Converter } from "showdown";
+import anime from "animejs";
 
 let converter = new Converter();
 
@@ -55,38 +56,58 @@ class CodeCell extends LitElement {
   render() {
     return html`<div class="code-cell">
       <div class="code-cell-editor"></div>
-      <div class="code-cell-output-container" style="display:none">
-        <div class="code-cell-menu">
+      <div
+        class="code-cell-output-container"
+        style="opacity: 0; margin: 0; transition: opacity 1s, margin 1s;"
+      >
+        <div
+          class="code-cell-menu"
+          style="display:flex; justify-content: space-around; align-items: center;"
+        >
           <div
             class="code-cell-menu-item code-cell-menu-item-html"
-            style="display:none"
+            style="overflow:hidden; width: 0;"
           >
             ☲ html
           </div>
           <div
             class="code-cell-menu-item code-cell-menu-item-text"
-            style="display:none"
+            style="overflow:hidden; width: 0;"
           >
             ☶ text
           </div>
           <div
             class="code-cell-menu-item code-cell-menu-item-markdown"
-            style="display:none"
+            style="overflow:hidden; width: 0;"
           >
             ☷ markdown
           </div>
           <div
+            class="code-cell-menu-item code-cell-menu-item-image"
+            style="overflow:hidden; width: 0;"
+          >
+            ☷ image
+          </div>
+          <div
             class="code-cell-menu-item code-cell-menu-item-log"
-            style="display:none"
+            style=" overflow:hidden; width: 0;"
           >
             ☰ log
           </div>
+          <div
+            class="code-cell-menu-item code-cell-menu-item-log"
+            style="color: #e83716;"
+            @click=${() => this.remove()}
+          >
+            删 delete cell
+          </div>
         </div>
-        <div class="code-cell-output-shell">
+        <div class="code-cell-output-shell" style="display: none;">
           <div class="code-cell-minimize">+</div>
           <div class="code-cell-output">
             <div class="code-cell-loading"></div>
             <div class="code-cell-output-text" style="display:none"></div>
+            <div class="code-cell-output-image" style="display:none"></div>
             <div class="code-cell-output-markdown" style="display:none"></div>
             <div class="code-cell-output-html" style="display:none"></div>
             <div class="code-cell-output-log" style="display:none"></div>
@@ -99,7 +120,7 @@ class CodeCell extends LitElement {
   firstUpdated() {
     this.editorView = new EditorView({
       state: EditorState.create({
-        doc: `println!("hello");`,
+        doc: `println!("Hello World!");`,
         extensions: [
           basicSetup,
           keymap.of([
@@ -194,103 +215,220 @@ class CodeCell extends LitElement {
   }
 
   handleResult(a: any) {
-    let c = defined(this.querySelector(".code-cell-loading")) as HTMLElement;
-    c.style.display = "none";
-    defined(this.querySelector(".code-cell-menu")).style.display =
-      "block";
-    defined(this.querySelector(".code-cell-menu-item-log")).style.display =
-      "none";
-    defined(this.querySelector(".code-cell-menu-item-html")).style.display =
-      "none";
-    defined(this.querySelector(".code-cell-menu-item-text")).style.display =
-      "none";
-    defined(this.querySelector(".code-cell-menu-item-markdown")).style.display =
-      "none";
-    defined(this.querySelector(".code-cell-output-log")).style.display = "none";
-    defined(this.querySelector(".code-cell-output-html")).style.display =
-      "none";
-    defined(this.querySelector(".code-cell-output-text")).style.display =
-      "none";
-    defined(this.querySelector(".code-cell-output-markdown")).style.display =
-      "none";
+    let loader = defined(
+      this.querySelector(".code-cell-loading")
+    ) as HTMLElement;
 
     let shown = false;
+
+    const textMenu = defined(
+      this.querySelector(".code-cell-menu-item-text")
+    ) as HTMLElement;
+    const markdownMenu = defined(
+      this.querySelector(".code-cell-menu-item-markdown")
+    ) as HTMLElement;
+    const htmlMenu = defined(
+      this.querySelector(".code-cell-menu-item-html")
+    ) as HTMLElement;
+    const imageMenu = defined(
+      this.querySelector(".code-cell-menu-item-image")
+    ) as HTMLElement;
+    const logMenu = defined(
+      this.querySelector(".code-cell-menu-item-log")
+    ) as HTMLElement;
+
+    const textOutput = defined(
+      this.querySelector(".code-cell-output-text")
+    ) as HTMLElement;
+    const markdownOutput = defined(
+      this.querySelector(".code-cell-output-markdown")
+    ) as HTMLElement;
+    const htmlOutput = defined(
+      this.querySelector(".code-cell-output-html")
+    ) as HTMLElement;
+    const imageOutput = defined(
+      this.querySelector(".code-cell-output-image")
+    ) as HTMLElement;
+    const logOutput = defined(
+      this.querySelector(".code-cell-output-log")
+    ) as HTMLElement;
+
+    let firstToShow: HTMLElement | undefined = undefined;
+    let menuShowTargets: HTMLElement[] = [];
+    let menuHideTargets: HTMLElement[] = [];
+    let outputMaker: (() => void)[] = [];
+
     if (a.text) {
-      defined(this.querySelector(".code-cell-menu-item-text")).style.display =
-        "inline-block";
-      let o = defined(this.querySelector(".code-cell-output-text"));
+      menuShowTargets.push(textMenu);
+      outputMaker.push(() => {
+        textOutput.innerHTML = a.text.trim().replaceAll("\n", "<br>");
+      });
       if (!shown) {
-        o.style.display = "block";
+        firstToShow = textOutput;
         shown = true;
       }
-      o.innerHTML = a.text.replaceAll("\n", "<br>");
+    } else {
+      menuHideTargets.push(textMenu);
+      outputMaker.push(() => {
+        textOutput.innerHTML = "";
+      });
     }
     if (a.log) {
-      defined(this.querySelector(".code-cell-menu-item-log")).style.display =
-        "inline-block";
-      let o = defined(this.querySelector(".code-cell-output-log"));
+      menuShowTargets.push(logMenu);
+      outputMaker.push(() => {
+        logOutput.innerHTML = a.log.trim().replaceAll("\n", "<br>");
+      });
       if (!shown) {
-        o.style.display = "block";
+        firstToShow = logOutput;
         shown = true;
       }
-      o.innerHTML = a.log.trim().replaceAll("\n", "<br>");
+    } else {
+      menuHideTargets.push(logMenu);
+      outputMaker.push(() => {
+        logOutput.innerHTML = "";
+      });
     }
     if (a.markdown) {
-      defined(
-        this.querySelector(".code-cell-menu-item-markdown")
-      ).style.display = "inline-block";
-      let o = defined(this.querySelector(".code-cell-output-markdown"));
+      menuShowTargets.push(markdownMenu);
+      outputMaker.push(() => {
+        markdownOutput.innerHTML = converter.makeHtml(a.markdown);
+      });
       if (!shown) {
-        o.style.display = "block";
+        firstToShow = markdownOutput;
         shown = true;
       }
-      o.innerHTML = converter.makeHtml(a.markdown);
+    } else {
+      menuHideTargets.push(markdownMenu);
+      outputMaker.push(() => {
+        markdownOutput.innerHTML = "";
+      });
     }
     if (a.html) {
-      defined(this.querySelector(".code-cell-menu-item-html")).style.display =
-        "inline-block";
-      let o = defined(this.querySelector(".code-cell-output-html"));
+      menuShowTargets.push(htmlMenu);
+      outputMaker.push(() => {
+        htmlOutput.innerHTML = a.html;
+      });
       if (!shown) {
-        o.style.display = "block";
+        firstToShow = htmlOutput;
         shown = true;
       }
-      o.innerHTML = a.html;
+    } else {
+      menuHideTargets.push(htmlMenu);
+      outputMaker.push(() => {
+        htmlOutput.innerHTML = "";
+      });
     }
     if (a.image) {
-      defined(this.querySelector(".code-cell-menu-item-html")).style.display =
-        "inline-block";
-      let o = defined(this.querySelector(".code-cell-output-html"));
+      menuShowTargets.push(imageMenu);
+      outputMaker.push(() => {
+        imageOutput.innerHTML = a.html;
+      });
       if (!shown) {
-        o.style.display = "block";
+        firstToShow = imageOutput;
         shown = true;
       }
-      o.innerHTML = `<img src="${a.image}">`;
+    } else {
+      menuHideTargets.push(imageMenu);
+      outputMaker.push(() => {
+        imageOutput.innerHTML = "";
+      });
     }
+
+    anime
+      .timeline({
+        easing: "easeOutExpo",
+        duration: 1000,
+
+        complete: () => {
+          outputMaker.forEach((_) => _());
+        },
+      })
+      .add({
+        targets: loader,
+        opacity: 0,
+        complete: () => {
+          loader.style.display = "none";
+          anime({
+            easing: "easeOutExpo",
+            targets: menuHideTargets,
+            opacity: 0,
+            width: 0,
+          });
+          anime({
+            easing: "easeOutExpo",
+            targets: menuShowTargets,
+            width: 50,
+            opacity: 1,
+            begin: () => {
+              menuShowTargets.forEach((_) => {
+                _.style.opacity = "0";
+              });
+            },
+          });
+          if (firstToShow) {
+            outputMaker.forEach((_) => _());
+            anime({
+              easing: "easeOutExpo",
+              targets: firstToShow,
+              opacity: 1,
+              begin: () => {
+                if (firstToShow) {
+                  firstToShow.style.opacity = "0";
+                  firstToShow.style.display = "block";
+                }
+              },
+            });
+          }
+        },
+      });
   }
 
   async runCodeCell() {
-    let hide = (selector: string) => {
-      let c = defined(this.querySelector(selector)) as HTMLElement;
-      c.style.display = "none";
-    };
+    const textOutput = defined(
+      this.querySelector(".code-cell-output-text")
+    ) as HTMLElement;
+    const markdownOutput = defined(
+      this.querySelector(".code-cell-output-markdown")
+    ) as HTMLElement;
+    const htmlOutput = defined(
+      this.querySelector(".code-cell-output-html")
+    ) as HTMLElement;
+    const imageOutput = defined(
+      this.querySelector(".code-cell-output-image")
+    ) as HTMLElement;
+    const logOutput = defined(
+      this.querySelector(".code-cell-output-log")
+    ) as HTMLElement;
+    textOutput.innerHTML = "";
+    markdownOutput.innerHTML = "";
+    htmlOutput.innerHTML = "";
+    imageOutput.innerHTML = "";
+    logOutput.innerHTML = "";
 
-    let show = (selector: string) => {
-      let c = defined(this.querySelector(selector)) as HTMLElement;
-      c.style.display = "block";
-    };
+    anime({
+      easing: "easeOutExpo",
+      targets: this.querySelector(".code-cell-output-log"),
+      opacity: 0,
+      width: "0px",
+    });
 
-    hide(".code-cell-output-markdown");
-    hide(".code-cell-output-text");
-    hide(".code-cell-output-html");
-    hide(".code-cell-output-log");
-    hide(".code-cell-menu-item-log");
-    hide(".code-cell-menu-item-text");
-    hide(".code-cell-menu-item-markdown");
-    hide(".code-cell-menu-item-html");
-    hide(".code-cell-menu");
+    anime({
+      targets: [
+        this.querySelector(".code-cell-loading"),
+        this.querySelector(".code-cell-output-shell"),
+      ],
+      opacity: 1,
+      begin: () => {
+        this.querySelector(".code-cell-loading").style.display = "block";
+        this.querySelector(".code-cell-output-shell").style.display = "block";
+      },
+    });
 
-    show(".code-cell-loading");
-    show(".code-cell-output-container");
+    anime({
+      targets: this.querySelector(".code-cell-output-container"),
+      opacity: 1,
+      margin: "1rem 0",
+    });
 
     let r = (await fetch(
       `http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/execute`,
