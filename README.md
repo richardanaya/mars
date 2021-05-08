@@ -22,7 +22,7 @@ mars
 
 Getting a random number
 
-```
+```rust
 :dep rand
 use rand::Rng;
 
@@ -35,6 +35,29 @@ println!("Random u16: {}", n2);
 println!("Random u32: {}", rng.gen::<u32>());
 println!("Random i32: {}", rng.gen::<i32>());
 println!("Random float: {}", rng.gen::<f64>());
+```
+
+Showing some markdown
+
+```rust
+%%markdown
+# Title
+
+Text 
+* item 1
+* item 2
+```
+
+Showing some HTML.  Anything that evaluates to a json string in this format will render HTML instead.
+
+```rust
+r#"{"html":"<b>some html</b>"}"#
+```
+
+Showing some image.  Anything that evaluates to a json string in this format will render an image instead. Base64 images work too.
+
+```rust
+r#"{"image":"https://some.com/image.png"}"#
 ```
 
 
