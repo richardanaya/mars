@@ -1,7 +1,7 @@
 {
   "inputs": {
     "index.html.inline.0.css": {
-      "bytes": 3850,
+      "bytes": 4431,
       "imports": []
     },
     "_snowpack/pkg/lit.js": {
@@ -63,7 +63,7 @@
       "imports": []
     },
     "CodeCell.js": {
-      "bytes": 11400,
+      "bytes": 12652,
       "imports": [
         {
           "path": "_snowpack/pkg/lit.js",
@@ -131,10 +131,10 @@
       "imports": [],
       "inputs": {
         "index.html.inline.0.css": {
-          "bytesInOutput": 2981
+          "bytesInOutput": 3420
         }
       },
-      "bytes": 3011
+      "bytes": 3450
     },
     "../~~bundle~~/index.js": {
       "imports": [],
@@ -165,7 +165,7 @@
           "bytesInOutput": 138195
         },
         "CodeCell.js": {
-          "bytesInOutput": 11175
+          "bytesInOutput": 12407
         },
         "CpuInfo.js": {
           "bytesInOutput": 1286
@@ -174,7 +174,7 @@
           "bytesInOutput": 164
         }
       },
-      "bytes": 219636
+      "bytes": 220868
     }
   }
 }

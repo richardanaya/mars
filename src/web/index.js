@@ -5699,10 +5699,23 @@ var CodeCell = class extends h$2 {
   }
   render() {
     return T`<div class="code-cell">
-      <div class="code-cell-editor"></div>
+      <div class="code-editor-row">
+        <div class="code-cell-editor"></div>
+        <div class="code-editor-row-end">
+          <div class="code-cell-delete" @click=${() => this.remove()}>
+            <span
+              class="material-icons"
+              style="font-size: 12px; 
+              margin-top: 4px;"
+            >
+              close
+            </span>
+          </div>
+        </div>
+      </div>
       <div
         class="code-cell-output-container"
-        style="opacity: 0; margin: 0; transition: opacity 1s, margin 1s;"
+        style="opacity: 0; margin: 1rem 0; transition: opacity 1s, margin 1s;"
       >
         <div
           class="code-cell-menu"
@@ -5741,9 +5754,18 @@ var CodeCell = class extends h$2 {
           <div
             class="code-cell-menu-item code-cell-menu-item-log"
             style="color: #e83716;"
-            @click=${() => this.remove()}
+            @click=${() => {
+      this.querySelector(".code-cell-output-container").style.display = "none";
+    }}
           >
-            删 delete cell
+            <span
+              class="material-icons"
+              style="font-size: 12px; 
+          margin-top: 4px;"
+            >
+              expand_less
+            </span>
+            clear cell
           </div>
         </div>
         <div class="code-cell-output-shell" style="display: none;">
@@ -5961,39 +5983,44 @@ var CodeCell = class extends h$2 {
         });
         if (firstToShow) {
           outputMaker.forEach((_2) => _2());
-          animejs_default({
-            easing: "easeOutExpo",
-            targets: firstToShow,
-            opacity: 1,
-            begin: () => {
-              if (firstToShow) {
-                firstToShow.style.opacity = "0";
-                firstToShow.style.display = "block";
-              }
-            }
-          });
+          firstToShow.style.display = "block";
+          firstToShow.style.opacity = "1";
         }
       }
     });
   }
   async runCodeCell() {
+    this.querySelector(".code-cell-output-container").style.display = "block";
+    const textOutput = defined(this.querySelector(".code-cell-output-text"));
+    const markdownOutput = defined(this.querySelector(".code-cell-output-markdown"));
+    const htmlOutput = defined(this.querySelector(".code-cell-output-html"));
+    const imageOutput = defined(this.querySelector(".code-cell-output-image"));
+    const logOutput = defined(this.querySelector(".code-cell-output-log"));
+    textOutput.innerHTML = "";
+    textOutput.style.display = "none";
+    markdownOutput.innerHTML = "";
+    markdownOutput.style.display = "none";
+    htmlOutput.innerHTML = "";
+    htmlOutput.style.display = "none";
+    imageOutput.innerHTML = "";
+    imageOutput.style.display = "none";
+    logOutput.innerHTML = "";
+    logOutput.style.display = "none";
     animejs_default({
-      easing: "easeOutExpo",
-      targets: this.querySelector(".code-cell-output-log"),
-      opacity: 0,
-      width: "0px"
-    });
-    animejs_default({
-      targets: [this.querySelector(".code-cell-loading"), this.querySelector(".code-cell-output-shell")],
+      targets: [
+        this.querySelector(".code-cell-loading"),
+        this.querySelector(".code-cell-output-shell")
+      ],
       opacity: 1,
       begin: () => {
         this.querySelector(".code-cell-loading").style.display = "block";
+        this.querySelector(".code-cell-output-shell").style.display = "block";
       }
     });
+    this.querySelector(".code-cell-output-container").style.display = "block";
     animejs_default({
       targets: this.querySelector(".code-cell-output-container"),
-      opacity: 1,
-      margin: "1rem 0"
+      opacity: 1
     });
     let r2 = await fetch(`http://127.0.0.1:8080/notebook/${getCurrentNotebookId()}/execute`, {
       method: "POST",

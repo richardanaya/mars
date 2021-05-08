@@ -55,10 +55,23 @@ class CodeCell extends LitElement {
 
   render() {
     return html`<div class="code-cell">
-      <div class="code-cell-editor"></div>
+      <div class="code-editor-row">
+        <div class="code-cell-editor"></div>
+        <div class="code-editor-row-end">
+          <div class="code-cell-delete" @click=${() => this.remove()}>
+            <span
+              class="material-icons"
+              style="font-size: 12px; 
+              margin-top: 4px;"
+            >
+              close
+            </span>
+          </div>
+        </div>
+      </div>
       <div
         class="code-cell-output-container"
-        style="opacity: 0; margin: 0; transition: opacity 1s, margin 1s;"
+        style="opacity: 0; margin: 1rem 0; transition: opacity 1s, margin 1s;"
       >
         <div
           class="code-cell-menu"
@@ -97,9 +110,20 @@ class CodeCell extends LitElement {
           <div
             class="code-cell-menu-item code-cell-menu-item-log"
             style="color: #e83716;"
-            @click=${() => this.remove()}
+            @click=${() => {
+              (this.querySelector(
+                ".code-cell-output-container"
+              ) as HTMLElement).style.display = "none";
+            }}
           >
-            删 delete cell
+            <span
+              class="material-icons"
+              style="font-size: 12px; 
+          margin-top: 4px;"
+            >
+              expand_less
+            </span>
+            clear cell
           </div>
         </div>
         <div class="code-cell-output-shell" style="display: none;">
@@ -367,23 +391,15 @@ class CodeCell extends LitElement {
           });
           if (firstToShow) {
             outputMaker.forEach((_) => _());
-            anime({
-              easing: "easeOutExpo",
-              targets: firstToShow,
-              opacity: 1,
-              begin: () => {
-                if (firstToShow) {
-                  firstToShow.style.opacity = "0";
-                  firstToShow.style.display = "block";
-                }
-              },
-            });
+            firstToShow.style.display = "block";
+            firstToShow.style.opacity = "1";
           }
         },
       });
   }
 
   async runCodeCell() {
+    this.querySelector(".code-cell-output-container").style.display = "block";
     const textOutput = defined(
       this.querySelector(".code-cell-output-text")
     ) as HTMLElement;
@@ -400,17 +416,15 @@ class CodeCell extends LitElement {
       this.querySelector(".code-cell-output-log")
     ) as HTMLElement;
     textOutput.innerHTML = "";
+    textOutput.style.display = "none";
     markdownOutput.innerHTML = "";
+    markdownOutput.style.display = "none";
     htmlOutput.innerHTML = "";
+    htmlOutput.style.display = "none";
     imageOutput.innerHTML = "";
+    imageOutput.style.display = "none";
     logOutput.innerHTML = "";
-
-    anime({
-      easing: "easeOutExpo",
-      targets: this.querySelector(".code-cell-output-log"),
-      opacity: 0,
-      width: "0px",
-    });
+    logOutput.style.display = "none";
 
     anime({
       targets: [
@@ -424,10 +438,11 @@ class CodeCell extends LitElement {
       },
     });
 
+    this.querySelector(".code-cell-output-container").style.display = "block";
+
     anime({
       targets: this.querySelector(".code-cell-output-container"),
       opacity: 1,
-      margin: "1rem 0",
     });
 
     let r = (await fetch(
