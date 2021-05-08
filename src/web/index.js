@@ -5786,8 +5786,8 @@ var CodeCell = class extends h$2 {
     this.editorView = new EditorView({
       state: EditorState.create({
         doc: `println!("Hello World!");`,
+        scrollbarStyle: "native",
         extensions: [
-          basicSetup,
           keymap.of([
             {
               key: "Ctrl-Enter",
@@ -5796,6 +5796,7 @@ var CodeCell = class extends h$2 {
               }
             }
           ]),
+          basicSetup,
           keymap.of([defaultTabBinding]),
           rust(),
           myTheme,
@@ -5941,7 +5942,7 @@ var CodeCell = class extends h$2 {
     if (a2.image) {
       menuShowTargets.push(imageMenu);
       outputMaker.push(() => {
-        imageOutput.innerHTML = a2.html;
+        imageOutput.innerHTML = `<img src="${a2.image}"/>`;
       });
       if (!shown) {
         firstToShow = imageOutput;
@@ -6090,6 +6091,9 @@ CpuInfo = __decorate4([
 ], CpuInfo);
 
 // index.js
+document.querySelector(".add-cell")?.addEventListener("click", () => {
+  document.querySelector(".notebook")?.appendChild(document.createElement("code-cell"));
+});
 document.querySelector("#add-cell")?.addEventListener("click", () => {
   document.querySelector(".notebook")?.appendChild(document.createElement("code-cell"));
 });

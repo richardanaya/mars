@@ -145,16 +145,17 @@ class CodeCell extends LitElement {
     this.editorView = new EditorView({
       state: EditorState.create({
         doc: `println!("Hello World!");`,
+        scrollbarStyle: "native",
         extensions: [
-          basicSetup,
           keymap.of([
             {
               key: "Ctrl-Enter",
               run: () => {
                 this.runCodeCell();
               },
-            },
+            }
           ]),
+          basicSetup,
           keymap.of([defaultTabBinding]),
           rust(),
           myTheme,
@@ -345,7 +346,7 @@ class CodeCell extends LitElement {
     if (a.image) {
       menuShowTargets.push(imageMenu);
       outputMaker.push(() => {
-        imageOutput.innerHTML = a.html;
+        imageOutput.innerHTML = `<img src="${a.image}"/>`;
       });
       if (!shown) {
         firstToShow = imageOutput;

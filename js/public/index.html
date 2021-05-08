@@ -138,6 +138,10 @@
         text-decoration: underline;
       }
 
+      .code-cell-editor {
+        overflow-x: hidden;
+      }
+
       .code-cell-loading,
       .code-cell-loading:after {
         border-radius: 50%;
@@ -206,6 +210,41 @@
         font-size: unset;
         line-height: unset;
       }
+
+      .add-cell {
+        margin: 1rem;
+        border: solid 1px white;
+        text-align: center;
+        margin: 1rem;
+        border: dashed 1px #929292;
+        text-align: center;
+        color: #929292;
+        cursor: pointer;
+        opacity: 0.5;
+        border-radius: 5px;
+        transition: opacity 1s;
+      }
+
+      .add-cell:hover {
+        opacity: 1;
+      }
+
+      ::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(13deg, #2e2e2e 14%, #2e2e2e 64%);
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(13deg, #2e2e2e 14%, #2e2e2e 64%);
+      }
+      ::-webkit-scrollbar-track {
+        background: #000000;
+        border-radius: 10px;
+        box-shadow: inset 7px 10px 12px #636363;
+      }
     </style>
   </head>
   <body>
@@ -226,8 +265,13 @@
           ><text-typography type="h3">demo notebook</text-typography>
         </span>
       </div>
-      <div class="notebook">
-        <code-cell></code-cell>
+      <div>
+        <div class="notebook">
+          <code-cell></code-cell>
+        </div>
+        <div class="add-cell">
+          <span class="material-icons" style="font-size: 12px"> add </span>
+        </div>
       </div>
     </div>
     <script type="module" src="/index.js"></script>

@@ -1,7 +1,7 @@
 {
   "inputs": {
     "index.html.inline.0.css": {
-      "bytes": 4431,
+      "bytes": 5360,
       "imports": []
     },
     "_snowpack/pkg/lit.js": {
@@ -63,7 +63,7 @@
       "imports": []
     },
     "CodeCell.js": {
-      "bytes": 12652,
+      "bytes": 12705,
       "imports": [
         {
           "path": "_snowpack/pkg/lit.js",
@@ -105,7 +105,7 @@
       ]
     },
     "index.js": {
-      "bytes": 270,
+      "bytes": 434,
       "imports": [
         {
           "path": "TextTypography.js",
@@ -131,10 +131,10 @@
       "imports": [],
       "inputs": {
         "index.html.inline.0.css": {
-          "bytesInOutput": 3420
+          "bytesInOutput": 4135
         }
       },
-      "bytes": 3450
+      "bytes": 4165
     },
     "../~~bundle~~/index.js": {
       "imports": [],
@@ -165,16 +165,16 @@
           "bytesInOutput": 138195
         },
         "CodeCell.js": {
-          "bytesInOutput": 12407
+          "bytesInOutput": 12460
         },
         "CpuInfo.js": {
           "bytesInOutput": 1286
         },
         "index.js": {
-          "bytesInOutput": 164
+          "bytesInOutput": 328
         }
       },
-      "bytes": 220868
+      "bytes": 221085
     }
   }
 }

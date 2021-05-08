@@ -5,7 +5,8 @@ A data science notebook for Rust.
 * a full Rust context based off [evxcr](https://github.com/google/evcxr) 
 * single binary
 
-![](mars.gif)
+![](vid1.gif)
+![](vid2.gif)
 
 # Installation
 
