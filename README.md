@@ -3,6 +3,7 @@
 A data science notebook for Rust.
 
 * a full Rust context based off [evxcr](https://github.com/google/evcxr) 
+* Can dynamically loading dependencies using evxcr ":dep" command (e.g. ":dep random")
 * single binary
 
 ![](vid1.gif)
